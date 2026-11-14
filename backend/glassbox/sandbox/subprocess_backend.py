@@ -25,6 +25,8 @@ class LaunchSpec:
     job_path: str
     work_dir: str
     timeout_s: float
+    run_id: str = ""
+    allow_network: bool = False
 
 
 def build_env() -> dict[str, str]:
@@ -57,6 +59,19 @@ async def kill_tree(proc: asyncio.subprocess.Process) -> None:
 
 
 class SubprocessBackend:
+    """Runs the runner as a local child process. ``DockerBackend`` overrides the three hooks below."""
+
+    open_dirs = False
+
+    def argv(self, spec: LaunchSpec) -> list[str]:
+        return build_argv(spec.job_path)
+
+    def env(self, spec: LaunchSpec) -> dict[str, str]:
+        return build_env()
+
+    async def kill(self, proc: asyncio.subprocess.Process, spec: LaunchSpec) -> None:
+        await kill_tree(proc)
+
     async def execute(self, spec: LaunchSpec) -> AsyncIterator[dict[str, Any]]:
         started = time.monotonic()
         popen_kwargs: dict[str, Any] = {}
@@ -65,9 +80,9 @@ class SubprocessBackend:
         else:
             popen_kwargs["start_new_session"] = True
         proc = await asyncio.create_subprocess_exec(
-            *build_argv(spec.job_path),
+            *self.argv(spec),
             cwd=spec.work_dir,
-            env=build_env(),
+            env=self.env(spec),
             stdin=asyncio.subprocess.DEVNULL,
             stdout=asyncio.subprocess.PIPE,
             stderr=asyncio.subprocess.PIPE,
@@ -80,7 +95,7 @@ class SubprocessBackend:
 
         def on_timeout() -> None:
             state["timed_out"] = True
-            kill_tasks.append(loop.create_task(kill_tree(proc)))
+            kill_tasks.append(loop.create_task(self.kill(proc, spec)))
 
         # The watchdog is independent of the event stream: it fires even if the runner is silent.
         watchdog = loop.call_later(spec.timeout_s, on_timeout)
@@ -114,7 +129,7 @@ class SubprocessBackend:
         finally:
             watchdog.cancel()
             if proc.returncode is None:
-                await kill_tree(proc)
+                await self.kill(proc, spec)
                 with contextlib.suppress(Exception):
                     await asyncio.wait_for(proc.wait(), 5)
             for task in kill_tasks:

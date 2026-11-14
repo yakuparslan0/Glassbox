@@ -5,6 +5,8 @@ subprocess, records every step, and visualizes / analyzes / explains it.
 Code, identifiers and commit messages are English. UI strings and mentor output default to Turkish
 (i18n dictionary, `en` also provided).
 
+Full original spec (sections 0-10, phase scopes and acceptance criteria): @docs/SPEC.md
+
 ## Working rules
 - Build in 5 phases, in order. At the end of each phase: run acceptance tests + ruff, commit, write a
   <=10 line "Phase N report", then STOP and wait for the user to say "devam".
@@ -71,8 +73,10 @@ Findings: `{id,category,severity,confidence,file,start_line,end_line,title,evide
 
 ## Status
 - Phase 1 (tracing core, sandbox, CLI): DONE (see docs/DECISIONS.md; POSIX rlimit path untested on the Windows dev box)
-- Phases 2-5: not started
+- Phase 2 (API, WS streaming, analysis engines, docker backend, gen_types, `glassbox report/serve`): DONE
+  (Docker backend only unit-tested: no Docker on the dev box)
+- Phases 3-5: not started
 
 ## Dev environment notes
 - Python venv lives outside the OneDrive-synced tree: `%USERPROFILE%\.venvs\glassbox` (Python 3.14).
-- Run tests: `<venv>\Scripts\python -m pytest backend/tests`; lint: `<venv>\Scripts\python -m ruff check backend`.
+- Run tests: `<venv>\Scripts\python -m pytest backend/tests`; lint: `<venv>\Scripts\python -m ruff check backend scripts`; schema: `make schema` (`--check` in tests).

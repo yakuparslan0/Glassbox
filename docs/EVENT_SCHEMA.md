@@ -106,3 +106,10 @@ library code is ONE `call(kind:"boundary")` / `return(kind:"boundary")` pair:
 With `full_snapshots: true` the runner emits, after every step event, `{stack, frame, locals, globals, heap}`
 taken from the live frames (the event's frame, the globals and the heap reachable from them). The test suite
 compares it with the state rebuilt from keyframes and deltas after every single step.
+
+## Phase 2 additions
+- `run_started.tracer` may also be `profile_time` / `profile_memory`: untraced measurement passes (`job.profile`).
+  They emit no `call`/`line`/`return` events; their result is `run_finished.profile`
+  (`{"kind":"time","functions":[...]}` or `{"kind":"memory","peak_kb":..,"live_lines":[...]}`).
+- TypeScript types and JSON Schema are generated (`make schema`): `frontend/src/types/generated.ts`,
+  `docs/schema/glassbox.schema.json`.

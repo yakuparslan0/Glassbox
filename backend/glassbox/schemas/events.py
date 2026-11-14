@@ -92,7 +92,7 @@ class Capabilities(_Strict):
 class RunStarted(_Event):
     type: Literal["run_started"] = "run_started"
     python: str
-    tracer: Literal["monitoring", "settrace"]
+    tracer: Literal["monitoring", "settrace", "profile_time", "profile_memory"]
     seed: int
     limits: dict[str, int]
     filter: Literal["user_only", "boundaries", "boundaries_verbose"]
@@ -270,11 +270,12 @@ class RunFinished(_Event):
     detail: str | None = None
     blocked: list[dict[str, str]] | None = None
     whatif_unapplied: int | None = None
+    # Only in untraced profile passes (job.profile): {"kind": "time"|"memory", ...}.
+    profile: dict[str, Any] | None = None
 
 
 # call/return share a discriminator value, so validation goes through a callable discriminator.
-EVENT_ADAPTER: TypeAdapter[Any] = TypeAdapter(
-    Annotated[
+RunEvent = Annotated[
         RunStarted
         | ImportEvent
         | LineEvent
@@ -291,7 +292,7 @@ EVENT_ADAPTER: TypeAdapter[Any] = TypeAdapter(
         | ReturnBoundary,
         Field(union_mode="left_to_right"),
     ]
-)
+EVENT_ADAPTER: TypeAdapter[Any] = TypeAdapter(RunEvent)
 
 
 def validate_event(raw: dict[str, Any]) -> Any:

@@ -1,0 +1,15 @@
+# Phase 2 scope: builds the locked-down runner image used by SANDBOX_MODE=docker.
+# (The API/frontend images arrive with the Dockerfiles of Phase 5.)
+#   docker compose --profile build build runner
+services:
+  runner:
+    image: glassbox-runner
+    build:
+      context: ./backend
+      dockerfile: ../docker/runner.Dockerfile
+    profiles: ["build"]
+    network_mode: none
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    user: "65534:65534"

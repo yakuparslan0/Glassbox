@@ -73,3 +73,49 @@ without `run_finished`, the parent synthesizes `limit_exceeded(timeout)` (if its
 **Deferred.** The `hot_loop` finding (5000 identical-state repeats of a line) is derived from the trace and is
 produced by `analysis/dynamic_profile.py` in Phase 2. Docker backend, API, config and the other analysis
 modules are Phase 2+.
+
+## Phase 2
+
+**Spec storage.** The full original spec lives in `docs/SPEC.md`; `CLAUDE.md` imports it with `@docs/SPEC.md`
+(loaded every session) instead of pasting ~12k tokens into the file itself.
+
+**Profile pass.** `job.profile = "time" | "memory"` runs the program UNTRACED in the runner (`runner/profiler.py`):
+cProfile and tracemalloc run in two SEPARATE processes because each distorts the other. The result travels in
+`run_finished.profile`. tracemalloc reports what is still allocated at the end of the run per line, plus the
+process-wide traced peak; the report labels it that way (per-line peaks are not available from tracemalloc).
+
+**Finding semantics.** `static_dead` reports direct facts (never referenced, unused, unreachable) with confidence
+`confirmed`/`likely`/`suspect`; `marksweep` adds transitive dead code (call graph by simple name, an
+over-approximation that only errs towards "reachable") and upgrades `likely` -> `confirmed` only when the lines also
+did not run. Static-dead code that DID run is downgraded to `suspect` (dynamic access). Dynamic findings
+(hot_loop, repeated_computation, loop_invariant, mutable_default, alias_mutation) and clones are part of the same
+`MarkSweepReport.findings` list; `high_memory` lives in the `ProfileReport`.
+
+**hot_loop** = one line ran N (5000) times in one frame with no local/global/heap change anywhere in that frame since
+its counters were last reset (alternating lines of `while True: pass` count). **repeated_computation** is `likely`
+(it assumes purity). **mutable_default** needs a static mutable default AND the same object passed in >= 2 calls with
+different contents; **alias_mutation** needs one object bound to >= 2 names in a frame, mutated through one name
+(attributed from the source line before the event that shows the change) and later read through another.
+
+**Clones.** A statement subtree qualifies with >= 5 statements OR >= 40 nodes (OR, because a 3-statement function with
+a loop is already a useful clone); identifiers (except builtins) and constants are normalized; only maximal groups are
+reported.
+
+**API.** Status codes: illegal path/duplicate path/missing entry/syntax error 422; too many files or too many bytes 413;
+all run slots busy 429 + `Retry-After`; unknown run 404; report/trace requested while running 409. Slots are counted
+(not queued) and released BEFORE the final state becomes visible. WebSocket backpressure: events are stored once per
+run, each connection holds only a cursor and one batch (<= 200 events, flushed every 50 ms), so a slow client lags
+behind its cursor instead of growing server memory; a send blocked for 30 s closes the socket. `?from_seq=N` resumes
+after event N. Browser `Origin` headers must be in `GLASSBOX_CORS_ORIGINS` (CORS does not cover WebSockets).
+Evicted/expired runs: `/trace` falls back to `GLASSBOX_RUNS_DIR/<run_id>.ndjson` when persistence is on.
+
+**Validation.** `GLASSBOX_VALIDATE_EVENTS`: `strict` (every event; a violation fails the run), `sampled` (default:
+every 100th event, logged only), `off`. The test-suite uses `strict`.
+
+**Docker.** `DockerBackend` reuses the subprocess backend (watchdog, synthesized `run_finished`, cleanup) and only
+changes argv/env/kill. Paths in a copy of `job.json` are rewritten to the container mounts (`/work`, `/cap`).
+`--network none` becomes `bridge` only when the run opts in with `allow_network`. NOT verified end-to-end: Docker is not
+installed on the development machine, only the generated command line is unit-tested.
+
+**Deferred.** Export routes (Phase 5), mentor/refactor routes (Phase 4), rootcause and bigo routes (Phase 5).
+Docker `API`/frontend images arrive with the Dockerfiles of Phase 5; `docker-compose.yml` only builds the runner image.

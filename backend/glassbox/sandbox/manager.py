@@ -32,6 +32,7 @@ class RunRequest:
     tracer: str = "monitoring"  # monitoring | settrace
     keyframe_interval: int = 200
     full_snapshots: bool = False  # debug: emit ground-truth `snapshot` events
+    profile: str | None = None  # None | "time" | "memory": untraced measurement pass (no tracer)
 
 
 def validate_files(files: dict[str, str], entry: str) -> None:
@@ -56,10 +57,10 @@ def _remove_tree(path: str) -> None:
 
 
 class SandboxManager:
-    """Runs requests in the subprocess backend (the Docker backend arrives in Phase 2)."""
+    """Runs requests in the subprocess backend (default) or any backend with the same ``execute`` shape."""
 
-    def __init__(self, keep_run_dirs: bool = False) -> None:
-        self._backend = SubprocessBackend()
+    def __init__(self, keep_run_dirs: bool = False, backend: SubprocessBackend | None = None) -> None:
+        self._backend = backend or SubprocessBackend()
         self._keep = keep_run_dirs
 
     async def run(self, request: RunRequest) -> AsyncIterator[dict[str, Any]]:
@@ -70,6 +71,10 @@ class SandboxManager:
         cap_dir = os.path.join(run_dir, "cap")
         os.makedirs(work_dir)
         os.makedirs(cap_dir)
+        if self._backend.open_dirs and os.name == "posix":
+            os.chmod(run_dir, 0o755)
+            os.chmod(work_dir, 0o777)
+            os.chmod(cap_dir, 0o777)
         try:
             for name, content in request.files.items():
                 target = os.path.join(work_dir, *PurePosixPath(name).parts)
@@ -89,12 +94,13 @@ class SandboxManager:
                 "tracer": request.tracer,
                 "keyframe_interval": request.keyframe_interval,
                 "full_snapshots": request.full_snapshots,
+                "profile": request.profile,
             }
             job_path = os.path.join(run_dir, "job.json")  # outside the cwd: user code cannot read/alter it
             with open(job_path, "w", encoding="utf-8") as f:
                 json.dump(job, f)
             timeout = float(request.limits.get("timeout_s", DEFAULT_TIMEOUT_S))
-            async for event in self._backend.execute(LaunchSpec(job_path, work_dir, timeout)):
+            async for event in self._backend.execute(LaunchSpec(job_path, work_dir, timeout, os.path.basename(run_dir), request.allow_network)):
                 yield event
         finally:
             if not self._keep:

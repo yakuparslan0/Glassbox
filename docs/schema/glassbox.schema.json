@@ -1,0 +1,2893 @@
+{
+  "$defs": {
+    "CallBoundary": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Prim"
+                  },
+                  {
+                    "$ref": "#/$defs/Ref"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Args"
+        },
+        "args_summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Args Summary"
+        },
+        "call_line": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Call Line"
+        },
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "func": {
+          "title": "Func",
+          "type": "string"
+        },
+        "globals_delta": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Delta"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "heap": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "discriminator": {
+                  "mapping": {
+                    "func": "#/$defs/OtherValue",
+                    "map": "#/$defs/MapEntry",
+                    "module": "#/$defs/OtherValue",
+                    "obj": "#/$defs/ObjEntry",
+                    "other": "#/$defs/OtherValue",
+                    "seq": "#/$defs/SeqEntry"
+                  },
+                  "propertyName": "k"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/SeqEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/MapEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/ObjEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heap"
+        },
+        "kind": {
+          "const": "boundary",
+          "default": "boundary",
+          "title": "Kind",
+          "type": "string"
+        },
+        "lib": {
+          "enum": [
+            "stdlib",
+            "third_party"
+          ],
+          "title": "Lib",
+          "type": "string"
+        },
+        "module": {
+          "title": "Module",
+          "type": "string"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parent"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "call",
+          "default": "call",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "frame",
+        "parent",
+        "lib",
+        "module",
+        "func",
+        "call_line"
+      ],
+      "title": "CallBoundary",
+      "type": "object"
+    },
+    "CallUser": {
+      "additionalProperties": false,
+      "properties": {
+        "args": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Prim"
+              },
+              {
+                "$ref": "#/$defs/Ref"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Args",
+          "type": "object"
+        },
+        "call_line": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Call Line"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "func": {
+          "title": "Func",
+          "type": "string"
+        },
+        "generator": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Generator"
+        },
+        "globals_delta": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Delta"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "heap": {
+          "additionalProperties": {
+            "discriminator": {
+              "mapping": {
+                "func": "#/$defs/OtherValue",
+                "map": "#/$defs/MapEntry",
+                "module": "#/$defs/OtherValue",
+                "obj": "#/$defs/ObjEntry",
+                "other": "#/$defs/OtherValue",
+                "seq": "#/$defs/SeqEntry"
+              },
+              "propertyName": "k"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/SeqEntry"
+              },
+              {
+                "$ref": "#/$defs/MapEntry"
+              },
+              {
+                "$ref": "#/$defs/ObjEntry"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Heap",
+          "type": "object"
+        },
+        "kind": {
+          "const": "user",
+          "default": "user",
+          "title": "Kind",
+          "type": "string"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        },
+        "parent": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Parent"
+        },
+        "qualname": {
+          "title": "Qualname",
+          "type": "string"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "call",
+          "default": "call",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "frame",
+        "parent",
+        "func",
+        "qualname",
+        "file",
+        "line",
+        "call_line",
+        "args"
+      ],
+      "title": "CallUser",
+      "type": "object"
+    },
+    "Capabilities": {
+      "additionalProperties": false,
+      "properties": {
+        "asyncio": {
+          "title": "Asyncio",
+          "type": "boolean"
+        },
+        "rlimit": {
+          "title": "Rlimit",
+          "type": "boolean"
+        },
+        "threads": {
+          "title": "Threads",
+          "type": "boolean"
+        },
+        "whatif": {
+          "title": "Whatif",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "whatif",
+        "threads",
+        "asyncio",
+        "rlimit"
+      ],
+      "title": "Capabilities",
+      "type": "object"
+    },
+    "Delta": {
+      "additionalProperties": false,
+      "properties": {
+        "del": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Del",
+          "type": "array"
+        },
+        "set": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Prim"
+              },
+              {
+                "$ref": "#/$defs/Ref"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Set",
+          "type": "object"
+        }
+      },
+      "title": "Delta",
+      "type": "object"
+    },
+    "ExceptionEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "exc_type": {
+          "title": "Exc Type",
+          "type": "string"
+        },
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "globals_delta": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Delta"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "handled": {
+          "title": "Handled",
+          "type": "boolean"
+        },
+        "heap": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "discriminator": {
+                  "mapping": {
+                    "func": "#/$defs/OtherValue",
+                    "map": "#/$defs/MapEntry",
+                    "module": "#/$defs/OtherValue",
+                    "obj": "#/$defs/ObjEntry",
+                    "other": "#/$defs/OtherValue",
+                    "seq": "#/$defs/SeqEntry"
+                  },
+                  "propertyName": "k"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/SeqEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/MapEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/ObjEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heap"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "exception",
+          "default": "exception",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "frame",
+        "line",
+        "exc_type",
+        "message",
+        "handled"
+      ],
+      "title": "ExceptionEvent",
+      "type": "object"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "properties": {
+        "autofixable": {
+          "default": false,
+          "title": "Autofixable",
+          "type": "boolean"
+        },
+        "category": {
+          "enum": [
+            "unused_import",
+            "unused_variable",
+            "uncalled_function",
+            "unreachable_code",
+            "duplicate_block",
+            "cold_code",
+            "hot_loop",
+            "repeated_computation",
+            "loop_invariant",
+            "high_memory",
+            "mutable_default",
+            "alias_mutation"
+          ],
+          "title": "Category",
+          "type": "string"
+        },
+        "confidence": {
+          "enum": [
+            "confirmed",
+            "likely",
+            "suspect"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "end_line": {
+          "title": "End Line",
+          "type": "integer"
+        },
+        "evidence": {
+          "additionalProperties": true,
+          "title": "Evidence",
+          "type": "object"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "info",
+            "warn",
+            "high"
+          ],
+          "title": "Severity",
+          "type": "string"
+        },
+        "start_line": {
+          "title": "Start Line",
+          "type": "integer"
+        },
+        "title": {
+          "title": "Title",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "category",
+        "severity",
+        "confidence",
+        "file",
+        "start_line",
+        "end_line",
+        "title"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "FuncStat": {
+      "additionalProperties": false,
+      "properties": {
+        "calls": {
+          "title": "Calls",
+          "type": "integer"
+        },
+        "self_ns": {
+          "title": "Self Ns",
+          "type": "integer"
+        },
+        "steps": {
+          "title": "Steps",
+          "type": "integer"
+        },
+        "total_ns": {
+          "title": "Total Ns",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "calls",
+        "steps",
+        "self_ns",
+        "total_ns"
+      ],
+      "title": "FuncStat",
+      "type": "object"
+    },
+    "FunctionComplexity": {
+      "additionalProperties": false,
+      "properties": {
+        "cyclomatic": {
+          "title": "Cyclomatic",
+          "type": "integer"
+        },
+        "end_line": {
+          "title": "End Line",
+          "type": "integer"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "max_loop_depth": {
+          "title": "Max Loop Depth",
+          "type": "integer"
+        },
+        "qualname": {
+          "title": "Qualname",
+          "type": "string"
+        },
+        "start_line": {
+          "title": "Start Line",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "file",
+        "qualname",
+        "start_line",
+        "end_line",
+        "cyclomatic",
+        "max_loop_depth"
+      ],
+      "title": "FunctionComplexity",
+      "type": "object"
+    },
+    "Health": {
+      "additionalProperties": false,
+      "properties": {
+        "llm": {
+          "$ref": "#/$defs/LlmHealth"
+        },
+        "sandbox_mode": {
+          "enum": [
+            "subprocess",
+            "docker"
+          ],
+          "title": "Sandbox Mode",
+          "type": "string"
+        },
+        "status": {
+          "const": "ok",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "llm",
+        "sandbox_mode"
+      ],
+      "title": "Health",
+      "type": "object"
+    },
+    "ImportEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "lib": {
+          "enum": [
+            "user",
+            "stdlib",
+            "third_party"
+          ],
+          "title": "Lib",
+          "type": "string"
+        },
+        "module": {
+          "title": "Module",
+          "type": "string"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "import",
+          "default": "import",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "module",
+        "lib"
+      ],
+      "title": "ImportEvent",
+      "type": "object"
+    },
+    "Keyframe": {
+      "additionalProperties": false,
+      "properties": {
+        "globals": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Prim"
+              },
+              {
+                "$ref": "#/$defs/Ref"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Globals",
+          "type": "object"
+        },
+        "heap": {
+          "additionalProperties": {
+            "discriminator": {
+              "mapping": {
+                "func": "#/$defs/OtherValue",
+                "map": "#/$defs/MapEntry",
+                "module": "#/$defs/OtherValue",
+                "obj": "#/$defs/ObjEntry",
+                "other": "#/$defs/OtherValue",
+                "seq": "#/$defs/SeqEntry"
+              },
+              "propertyName": "k"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/SeqEntry"
+              },
+              {
+                "$ref": "#/$defs/MapEntry"
+              },
+              {
+                "$ref": "#/$defs/ObjEntry"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Heap",
+          "type": "object"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "stack": {
+          "items": {
+            "$ref": "#/$defs/StackFrame"
+          },
+          "title": "Stack",
+          "type": "array"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "keyframe",
+          "default": "keyframe",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "stack",
+        "globals",
+        "heap"
+      ],
+      "title": "Keyframe",
+      "type": "object"
+    },
+    "LimitExceeded": {
+      "additionalProperties": false,
+      "properties": {
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "limit": {
+          "enum": [
+            "max_steps",
+            "timeout",
+            "memory",
+            "output",
+            "event_bytes"
+          ],
+          "title": "Limit",
+          "type": "string"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "limit_exceeded",
+          "default": "limit_exceeded",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "limit",
+        "detail"
+      ],
+      "title": "LimitExceeded",
+      "type": "object"
+    },
+    "Limits": {
+      "additionalProperties": false,
+      "properties": {
+        "max_output_kb": {
+          "anyOf": [
+            {
+              "maximum": 4096,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Output Kb"
+        },
+        "max_steps": {
+          "anyOf": [
+            {
+              "maximum": 200000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Steps"
+        },
+        "memory_mb": {
+          "anyOf": [
+            {
+              "maximum": 4096,
+              "minimum": 16,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Memory Mb"
+        },
+        "timeout_s": {
+          "anyOf": [
+            {
+              "maximum": 60,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Timeout S"
+        }
+      },
+      "title": "Limits",
+      "type": "object"
+    },
+    "LineEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "delta": {
+          "$ref": "#/$defs/Delta"
+        },
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "globals_delta": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Delta"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "heap": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "discriminator": {
+                  "mapping": {
+                    "func": "#/$defs/OtherValue",
+                    "map": "#/$defs/MapEntry",
+                    "module": "#/$defs/OtherValue",
+                    "obj": "#/$defs/ObjEntry",
+                    "other": "#/$defs/OtherValue",
+                    "seq": "#/$defs/SeqEntry"
+                  },
+                  "propertyName": "k"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/SeqEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/MapEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/ObjEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heap"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "line",
+          "default": "line",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "frame",
+        "line",
+        "delta"
+      ],
+      "title": "LineEvent",
+      "type": "object"
+    },
+    "LlmHealth": {
+      "additionalProperties": false,
+      "properties": {
+        "providers": {
+          "items": {
+            "additionalProperties": true,
+            "type": "object"
+          },
+          "title": "Providers",
+          "type": "array"
+        }
+      },
+      "title": "LlmHealth",
+      "type": "object"
+    },
+    "MapEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "k": {
+          "const": "map",
+          "default": "map",
+          "title": "K",
+          "type": "string"
+        },
+        "len": {
+          "title": "Len",
+          "type": "integer"
+        },
+        "pairs": {
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Prim"
+                  },
+                  {
+                    "$ref": "#/$defs/Ref"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Prim"
+                  },
+                  {
+                    "$ref": "#/$defs/Ref"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Pairs",
+          "type": "array"
+        },
+        "size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Size"
+        },
+        "t": {
+          "title": "T",
+          "type": "string"
+        },
+        "trunc": {
+          "default": false,
+          "title": "Trunc",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "t",
+        "len",
+        "pairs"
+      ],
+      "title": "MapEntry",
+      "type": "object"
+    },
+    "MarkSweepReport": {
+      "additionalProperties": false,
+      "description": "Static + dynamic findings of one run. ``steps`` / ``line_hits`` come from the traced run.",
+      "properties": {
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "functions": {
+          "items": {
+            "$ref": "#/$defs/FunctionComplexity"
+          },
+          "title": "Functions",
+          "type": "array"
+        },
+        "run_status": {
+          "title": "Run Status",
+          "type": "string"
+        },
+        "steps": {
+          "title": "Steps",
+          "type": "integer"
+        },
+        "summary": {
+          "$ref": "#/$defs/MarkSweepSummary"
+        }
+      },
+      "required": [
+        "run_status",
+        "steps",
+        "findings",
+        "functions",
+        "summary"
+      ],
+      "title": "MarkSweepReport",
+      "type": "object"
+    },
+    "MarkSweepSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "cold": {
+          "title": "Cold",
+          "type": "integer"
+        },
+        "confirmed_dead": {
+          "title": "Confirmed Dead",
+          "type": "integer"
+        },
+        "reclaimable_lines": {
+          "title": "Reclaimable Lines",
+          "type": "integer"
+        },
+        "suspect": {
+          "title": "Suspect",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "confirmed_dead",
+        "cold",
+        "suspect",
+        "reclaimable_lines"
+      ],
+      "title": "MarkSweepSummary",
+      "type": "object"
+    },
+    "MemoryLine": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        },
+        "size_kb": {
+          "title": "Size Kb",
+          "type": "number"
+        }
+      },
+      "required": [
+        "file",
+        "line",
+        "size_kb",
+        "count"
+      ],
+      "title": "MemoryLine",
+      "type": "object"
+    },
+    "ObjEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "attrs": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Prim"
+              },
+              {
+                "$ref": "#/$defs/Ref"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Attrs",
+          "type": "object"
+        },
+        "k": {
+          "const": "obj",
+          "default": "obj",
+          "title": "K",
+          "type": "string"
+        },
+        "t": {
+          "title": "T",
+          "type": "string"
+        },
+        "trunc": {
+          "default": false,
+          "title": "Trunc",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "t",
+        "attrs"
+      ],
+      "title": "ObjEntry",
+      "type": "object"
+    },
+    "OtherValue": {
+      "additionalProperties": false,
+      "properties": {
+        "k": {
+          "enum": [
+            "func",
+            "module",
+            "other"
+          ],
+          "title": "K",
+          "type": "string"
+        },
+        "r": {
+          "title": "R",
+          "type": "string"
+        },
+        "t": {
+          "title": "T",
+          "type": "string"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        }
+      },
+      "required": [
+        "k",
+        "t",
+        "r"
+      ],
+      "title": "OtherValue",
+      "type": "object"
+    },
+    "OutputEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "stream": {
+          "enum": [
+            "stdout",
+            "stderr"
+          ],
+          "title": "Stream",
+          "type": "string"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "output",
+          "default": "output",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "stream",
+        "text"
+      ],
+      "title": "OutputEvent",
+      "type": "object"
+    },
+    "Override": {
+      "additionalProperties": false,
+      "properties": {
+        "frame_depth": {
+          "minimum": 0,
+          "title": "Frame Depth",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "step": {
+          "minimum": 0,
+          "title": "Step",
+          "type": "integer"
+        },
+        "value_literal": {
+          "title": "Value Literal",
+          "type": "string"
+        }
+      },
+      "required": [
+        "step",
+        "frame_depth",
+        "name",
+        "value_literal"
+      ],
+      "title": "Override",
+      "type": "object"
+    },
+    "Prim": {
+      "additionalProperties": false,
+      "properties": {
+        "k": {
+          "const": "prim",
+          "default": "prim",
+          "title": "K",
+          "type": "string"
+        },
+        "r": {
+          "title": "R",
+          "type": "string"
+        },
+        "t": {
+          "title": "T",
+          "type": "string"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        }
+      },
+      "required": [
+        "t",
+        "r"
+      ],
+      "title": "Prim",
+      "type": "object"
+    },
+    "ProfileFunc": {
+      "additionalProperties": false,
+      "properties": {
+        "calls": {
+          "title": "Calls",
+          "type": "integer"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "func": {
+          "title": "Func",
+          "type": "string"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        },
+        "self_ms": {
+          "title": "Self Ms",
+          "type": "number"
+        },
+        "total_ms": {
+          "title": "Total Ms",
+          "type": "number"
+        }
+      },
+      "required": [
+        "func",
+        "file",
+        "line",
+        "calls",
+        "self_ms",
+        "total_ms"
+      ],
+      "title": "ProfileFunc",
+      "type": "object"
+    },
+    "ProfilePass": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "title": "Status",
+          "type": "string"
+        },
+        "wall_ms": {
+          "title": "Wall Ms",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "status",
+        "wall_ms"
+      ],
+      "title": "ProfilePass",
+      "type": "object"
+    },
+    "ProfileReport": {
+      "additionalProperties": false,
+      "description": "Untraced profile passes: real timings (cProfile) and memory (tracemalloc), measured separately.",
+      "properties": {
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "functions": {
+          "items": {
+            "$ref": "#/$defs/ProfileFunc"
+          },
+          "title": "Functions",
+          "type": "array"
+        },
+        "memory_pass": {
+          "$ref": "#/$defs/ProfilePass"
+        },
+        "memory_peak_kb": {
+          "title": "Memory Peak Kb",
+          "type": "number"
+        },
+        "memory_top_lines": {
+          "items": {
+            "$ref": "#/$defs/MemoryLine"
+          },
+          "title": "Memory Top Lines",
+          "type": "array"
+        },
+        "notes": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Notes",
+          "type": "array"
+        },
+        "time_pass": {
+          "$ref": "#/$defs/ProfilePass"
+        }
+      },
+      "required": [
+        "time_pass",
+        "memory_pass",
+        "functions",
+        "memory_peak_kb",
+        "memory_top_lines",
+        "findings",
+        "notes"
+      ],
+      "title": "ProfileReport",
+      "type": "object"
+    },
+    "Ref": {
+      "additionalProperties": false,
+      "properties": {
+        "ref": {
+          "title": "Ref",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ref"
+      ],
+      "title": "Ref",
+      "type": "object"
+    },
+    "RepeatCall": {
+      "additionalProperties": false,
+      "properties": {
+        "args_fp": {
+          "title": "Args Fp",
+          "type": "string"
+        },
+        "count": {
+          "title": "Count",
+          "type": "integer"
+        },
+        "func": {
+          "title": "Func",
+          "type": "string"
+        }
+      },
+      "required": [
+        "func",
+        "args_fp",
+        "count"
+      ],
+      "title": "RepeatCall",
+      "type": "object"
+    },
+    "ReturnBoundary": {
+      "additionalProperties": false,
+      "properties": {
+        "dur_ns": {
+          "title": "Dur Ns",
+          "type": "integer"
+        },
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "globals_delta": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Delta"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "heap": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "discriminator": {
+                  "mapping": {
+                    "func": "#/$defs/OtherValue",
+                    "map": "#/$defs/MapEntry",
+                    "module": "#/$defs/OtherValue",
+                    "obj": "#/$defs/ObjEntry",
+                    "other": "#/$defs/OtherValue",
+                    "seq": "#/$defs/SeqEntry"
+                  },
+                  "propertyName": "k"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/SeqEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/MapEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/ObjEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heap"
+        },
+        "kind": {
+          "const": "boundary",
+          "title": "Kind",
+          "type": "string"
+        },
+        "raised": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Raised"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "synthetic": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Synthetic"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "return",
+          "default": "return",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        },
+        "value_summary": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value Summary"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "frame",
+        "kind",
+        "dur_ns"
+      ],
+      "title": "ReturnBoundary",
+      "type": "object"
+    },
+    "ReturnUser": {
+      "additionalProperties": false,
+      "properties": {
+        "dur_ns": {
+          "title": "Dur Ns",
+          "type": "integer"
+        },
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "globals_delta": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Delta"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "heap": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "discriminator": {
+                  "mapping": {
+                    "func": "#/$defs/OtherValue",
+                    "map": "#/$defs/MapEntry",
+                    "module": "#/$defs/OtherValue",
+                    "obj": "#/$defs/ObjEntry",
+                    "other": "#/$defs/OtherValue",
+                    "seq": "#/$defs/SeqEntry"
+                  },
+                  "propertyName": "k"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/SeqEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/MapEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/ObjEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heap"
+        },
+        "kind": {
+          "anyOf": [
+            {
+              "const": "user",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Kind"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "return",
+          "default": "return",
+          "title": "Type",
+          "type": "string"
+        },
+        "unwound": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unwound"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Prim"
+            },
+            {
+              "$ref": "#/$defs/Ref"
+            },
+            {
+              "$ref": "#/$defs/OtherValue"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "frame",
+        "value",
+        "dur_ns"
+      ],
+      "title": "ReturnUser",
+      "type": "object"
+    },
+    "RunCreate": {
+      "additionalProperties": false,
+      "properties": {
+        "allow_network": {
+          "default": false,
+          "title": "Allow Network",
+          "type": "boolean"
+        },
+        "entry": {
+          "default": "main.py",
+          "title": "Entry",
+          "type": "string"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/$defs/SourceFile"
+          },
+          "title": "Files",
+          "type": "array"
+        },
+        "filter": {
+          "default": "boundaries",
+          "enum": [
+            "user_only",
+            "boundaries",
+            "boundaries_verbose"
+          ],
+          "title": "Filter",
+          "type": "string"
+        },
+        "limits": {
+          "$ref": "#/$defs/Limits"
+        },
+        "overrides": {
+          "items": {
+            "$ref": "#/$defs/Override"
+          },
+          "title": "Overrides",
+          "type": "array"
+        },
+        "seed": {
+          "default": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "stdin": {
+          "default": "",
+          "title": "Stdin",
+          "type": "string"
+        }
+      },
+      "required": [
+        "files"
+      ],
+      "title": "RunCreate",
+      "type": "object"
+    },
+    "RunCreated": {
+      "additionalProperties": false,
+      "properties": {
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id"
+      ],
+      "title": "RunCreated",
+      "type": "object"
+    },
+    "RunEvent": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/RunStarted"
+        },
+        {
+          "$ref": "#/$defs/ImportEvent"
+        },
+        {
+          "$ref": "#/$defs/LineEvent"
+        },
+        {
+          "$ref": "#/$defs/ExceptionEvent"
+        },
+        {
+          "$ref": "#/$defs/OutputEvent"
+        },
+        {
+          "$ref": "#/$defs/Keyframe"
+        },
+        {
+          "$ref": "#/$defs/Snapshot"
+        },
+        {
+          "$ref": "#/$defs/WhatIfApplied"
+        },
+        {
+          "$ref": "#/$defs/LimitExceeded"
+        },
+        {
+          "$ref": "#/$defs/RunFinished"
+        },
+        {
+          "$ref": "#/$defs/CallUser"
+        },
+        {
+          "$ref": "#/$defs/CallBoundary"
+        },
+        {
+          "$ref": "#/$defs/ReturnUser"
+        },
+        {
+          "$ref": "#/$defs/ReturnBoundary"
+        }
+      ]
+    },
+    "RunFinished": {
+      "additionalProperties": false,
+      "properties": {
+        "blocked": {
+          "anyOf": [
+            {
+              "items": {
+                "additionalProperties": {
+                  "type": "string"
+                },
+                "type": "object"
+              },
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Blocked"
+        },
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "executed_lines": {
+          "additionalProperties": {
+            "items": {
+              "type": "integer"
+            },
+            "type": "array"
+          },
+          "title": "Executed Lines",
+          "type": "object"
+        },
+        "exit_code": {
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "func_stats": {
+          "additionalProperties": {
+            "$ref": "#/$defs/FuncStat"
+          },
+          "title": "Func Stats",
+          "type": "object"
+        },
+        "line_hits": {
+          "additionalProperties": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object"
+          },
+          "title": "Line Hits",
+          "type": "object"
+        },
+        "profile": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Profile"
+        },
+        "repeat_calls": {
+          "items": {
+            "$ref": "#/$defs/RepeatCall"
+          },
+          "title": "Repeat Calls",
+          "type": "array"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "status": {
+          "enum": [
+            "ok",
+            "exception",
+            "limit",
+            "killed",
+            "blocked"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "steps": {
+          "title": "Steps",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "run_finished",
+          "default": "run_finished",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        },
+        "wall_ms": {
+          "title": "Wall Ms",
+          "type": "integer"
+        },
+        "whatif_unapplied": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Whatif Unapplied"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "status",
+        "exit_code",
+        "steps",
+        "wall_ms",
+        "line_hits",
+        "func_stats",
+        "executed_lines",
+        "repeat_calls"
+      ],
+      "title": "RunFinished",
+      "type": "object"
+    },
+    "RunStarted": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "$ref": "#/$defs/Capabilities"
+        },
+        "filter": {
+          "enum": [
+            "user_only",
+            "boundaries",
+            "boundaries_verbose"
+          ],
+          "title": "Filter",
+          "type": "string"
+        },
+        "limits": {
+          "additionalProperties": {
+            "type": "integer"
+          },
+          "title": "Limits",
+          "type": "object"
+        },
+        "python": {
+          "title": "Python",
+          "type": "string"
+        },
+        "seed": {
+          "title": "Seed",
+          "type": "integer"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "tracer": {
+          "enum": [
+            "monitoring",
+            "settrace",
+            "profile_time",
+            "profile_memory"
+          ],
+          "title": "Tracer",
+          "type": "string"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "run_started",
+          "default": "run_started",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "python",
+        "tracer",
+        "seed",
+        "limits",
+        "filter",
+        "capabilities"
+      ],
+      "title": "RunStarted",
+      "type": "object"
+    },
+    "RunSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "created_at": {
+          "title": "Created At",
+          "type": "number"
+        },
+        "entry": {
+          "title": "Entry",
+          "type": "string"
+        },
+        "error": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Error"
+        },
+        "events": {
+          "title": "Events",
+          "type": "integer"
+        },
+        "run_finished": {
+          "anyOf": [
+            {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Run Finished"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        },
+        "state": {
+          "enum": [
+            "running",
+            "finished",
+            "cancelled",
+            "error"
+          ],
+          "title": "State",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "state",
+        "entry",
+        "events",
+        "created_at"
+      ],
+      "title": "RunSummary",
+      "type": "object"
+    },
+    "SeqEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "items": {
+          "items": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Prim"
+              },
+              {
+                "$ref": "#/$defs/Ref"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Items",
+          "type": "array"
+        },
+        "k": {
+          "const": "seq",
+          "default": "seq",
+          "title": "K",
+          "type": "string"
+        },
+        "len": {
+          "title": "Len",
+          "type": "integer"
+        },
+        "size": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Size"
+        },
+        "t": {
+          "title": "T",
+          "type": "string"
+        },
+        "trunc": {
+          "default": false,
+          "title": "Trunc",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "t",
+        "len",
+        "items"
+      ],
+      "title": "SeqEntry",
+      "type": "object"
+    },
+    "Snapshot": {
+      "additionalProperties": false,
+      "description": "Debug-only (job.full_snapshots): ground truth taken from the live frames after a step.",
+      "properties": {
+        "frame": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Frame"
+        },
+        "globals": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Prim"
+              },
+              {
+                "$ref": "#/$defs/Ref"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Globals",
+          "type": "object"
+        },
+        "heap": {
+          "additionalProperties": {
+            "discriminator": {
+              "mapping": {
+                "func": "#/$defs/OtherValue",
+                "map": "#/$defs/MapEntry",
+                "module": "#/$defs/OtherValue",
+                "obj": "#/$defs/ObjEntry",
+                "other": "#/$defs/OtherValue",
+                "seq": "#/$defs/SeqEntry"
+              },
+              "propertyName": "k"
+            },
+            "oneOf": [
+              {
+                "$ref": "#/$defs/SeqEntry"
+              },
+              {
+                "$ref": "#/$defs/MapEntry"
+              },
+              {
+                "$ref": "#/$defs/ObjEntry"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Heap",
+          "type": "object"
+        },
+        "locals": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "anyOf": [
+                  {
+                    "$ref": "#/$defs/Prim"
+                  },
+                  {
+                    "$ref": "#/$defs/Ref"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Locals"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "stack": {
+          "items": {
+            "$ref": "#/$defs/SnapshotFrame"
+          },
+          "title": "Stack",
+          "type": "array"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "snapshot",
+          "default": "snapshot",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "stack",
+        "frame",
+        "locals",
+        "globals",
+        "heap"
+      ],
+      "title": "Snapshot",
+      "type": "object"
+    },
+    "SnapshotFrame": {
+      "additionalProperties": false,
+      "properties": {
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "func": {
+          "title": "Func",
+          "type": "string"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "frame",
+        "func",
+        "line"
+      ],
+      "title": "SnapshotFrame",
+      "type": "object"
+    },
+    "SourceFile": {
+      "additionalProperties": false,
+      "properties": {
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "path": {
+          "title": "Path",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "content"
+      ],
+      "title": "SourceFile",
+      "type": "object"
+    },
+    "StackFrame": {
+      "additionalProperties": false,
+      "properties": {
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "func": {
+          "title": "Func",
+          "type": "string"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        },
+        "locals": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "$ref": "#/$defs/Prim"
+              },
+              {
+                "$ref": "#/$defs/Ref"
+              },
+              {
+                "$ref": "#/$defs/OtherValue"
+              }
+            ]
+          },
+          "title": "Locals",
+          "type": "object"
+        }
+      },
+      "required": [
+        "frame",
+        "func",
+        "line",
+        "locals"
+      ],
+      "title": "StackFrame",
+      "type": "object"
+    },
+    "StaticReport": {
+      "additionalProperties": false,
+      "properties": {
+        "findings": {
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "functions": {
+          "items": {
+            "$ref": "#/$defs/FunctionComplexity"
+          },
+          "title": "Functions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "findings",
+        "functions"
+      ],
+      "title": "StaticReport",
+      "type": "object"
+    },
+    "StaticRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "default": "main.py",
+          "title": "Entry",
+          "type": "string"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/$defs/SourceFile"
+          },
+          "title": "Files",
+          "type": "array"
+        }
+      },
+      "required": [
+        "files"
+      ],
+      "title": "StaticRequest",
+      "type": "object"
+    },
+    "WhatIfApplied": {
+      "additionalProperties": false,
+      "properties": {
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "heap": {
+          "anyOf": [
+            {
+              "additionalProperties": {
+                "discriminator": {
+                  "mapping": {
+                    "func": "#/$defs/OtherValue",
+                    "map": "#/$defs/MapEntry",
+                    "module": "#/$defs/OtherValue",
+                    "obj": "#/$defs/ObjEntry",
+                    "other": "#/$defs/OtherValue",
+                    "seq": "#/$defs/SeqEntry"
+                  },
+                  "propertyName": "k"
+                },
+                "oneOf": [
+                  {
+                    "$ref": "#/$defs/SeqEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/MapEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/ObjEntry"
+                  },
+                  {
+                    "$ref": "#/$defs/OtherValue"
+                  }
+                ]
+              },
+              "type": "object"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Heap"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "new": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Prim"
+            },
+            {
+              "$ref": "#/$defs/Ref"
+            },
+            {
+              "$ref": "#/$defs/OtherValue"
+            }
+          ],
+          "title": "New"
+        },
+        "old": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Prim"
+            },
+            {
+              "$ref": "#/$defs/Ref"
+            },
+            {
+              "$ref": "#/$defs/OtherValue"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Old"
+        },
+        "seq": {
+          "title": "Seq",
+          "type": "integer"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "t": {
+          "title": "T",
+          "type": "integer"
+        },
+        "trunc": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Trunc"
+        },
+        "type": {
+          "const": "whatif_applied",
+          "default": "whatif_applied",
+          "title": "Type",
+          "type": "string"
+        },
+        "v": {
+          "const": 1,
+          "default": 1,
+          "title": "V",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "seq",
+        "t",
+        "step",
+        "frame",
+        "name",
+        "old",
+        "new"
+      ],
+      "title": "WhatIfApplied",
+      "type": "object"
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

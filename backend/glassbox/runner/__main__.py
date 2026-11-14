@@ -28,6 +28,10 @@ from .whatif import OverrideError, load_overrides
 
 
 def _make_tracer(name: str, recorder: Recorder, classifier: Classifier) -> Any:
+    if name in ("profile_time", "profile_memory"):
+        from .profiler import ProfileHarness
+
+        return ProfileHarness(name.removeprefix("profile_"), recorder, classifier)
     if name == "settrace":
         from .tracer_settrace import SettraceTracer
 
@@ -62,7 +66,8 @@ def _run(job: dict[str, Any]) -> int:
     captures = (FdCapture(out_path), FdCapture(err_path))
     rec = Recorder(job, limits, writer, Serializer(), classifier, captures)
     seed = int(job.get("seed", 0))
-    tracer_name = job.get("tracer", "monitoring")
+    profile_kind = job.get("profile")  # None | "time" | "memory": untraced measurement pass
+    tracer_name = f"profile_{profile_kind}" if profile_kind else job.get("tracer", "monitoring")
     rec.run_started(sys.version.split()[0], tracer_name, seed, rlimit)
 
     try:
