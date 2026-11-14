@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { Lang } from "../i18n";
 
 export type CenterTab = "graph" | "tree" | "heap";
-export type RightTab = "timeline" | "vars" | "cleanup" | "mentor" | "refactor";
+export type RightTab = "timeline" | "vars" | "cleanup" | "mentor" | "refactor" | "lab";
 
 export interface RunSettings {
   maxSteps: number;
@@ -19,7 +19,18 @@ export interface Reveal {
   nonce: number;
 }
 
+export interface WhatIfTarget {
+  name: string;
+  depth: number;
+  step: number;
+  current: string;
+}
+
 interface UiState {
+  whatIf: WhatIfTarget | null;
+  presenting: boolean;
+  openWhatIf: (target: WhatIfTarget | null) => void;
+  setPresenting: (on: boolean) => void;
   lang: Lang;
   centerTab: CenterTab;
   rightTab: RightTab;
@@ -43,6 +54,10 @@ const stored = (): Lang => {
 };
 
 export const useUiStore = create<UiState>((set) => ({
+  whatIf: null,
+  presenting: false,
+  openWhatIf: (whatIf) => set({ whatIf }),
+  setPresenting: (presenting) => set({ presenting }),
   lang: stored(),
   centerTab: "graph",
   rightTab: "timeline",

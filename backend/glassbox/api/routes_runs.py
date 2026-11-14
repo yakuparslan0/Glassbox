@@ -12,10 +12,13 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import Response, StreamingResponse
 
 from ..analysis import marksweep
+from ..analysis.branches import compare
 from ..analysis.common import SourceError
 from ..analysis.dynamic_profile import run_profile
+from ..analysis.slicing import SliceError, backward_slice
+from ..runner.whatif import OverrideError, load_overrides
 from ..sandbox.manager import RunRequest
-from ..schemas.analysis import MarkSweepReport, ProfileReport
+from ..schemas.analysis import BranchComparison, CausalChain, MarkSweepReport, ProfileReport
 from ..schemas.api import RunCreate, RunCreated, RunSummary
 from .deps import get_record, runtime, validated_files
 from .store import Runtime
@@ -26,9 +29,14 @@ _BUSY = "all run slots are busy; wait for a running program to finish and retry"
 
 def _request_from(body: RunCreate, files: dict[str, str]) -> RunRequest:
     limits = {k: v for k, v in body.limits.model_dump().items() if v is not None}
+    overrides = [o.model_dump() for o in body.overrides]
+    try:
+        load_overrides(overrides)  # literal_eval ONLY; anything else (e.g. __import__('os')) is refused up front
+    except OverrideError as exc:
+        raise HTTPException(422, f"What-If override rejected: {exc}") from exc
     return RunRequest(
         files=files, entry=body.entry, stdin=body.stdin, seed=body.seed, filter=body.filter, limits=limits,
-        overrides=[o.model_dump() for o in body.overrides], allow_network=body.allow_network,
+        overrides=overrides, allow_network=body.allow_network,
     )  # fmt: skip
 
 
@@ -109,3 +117,23 @@ async def profile_run(run_id: str, rt: Runtime = Depends(runtime)) -> ProfileRep
     finally:
         rt.release()
     return record.profile
+
+
+@router.get("/{run_id}/rootcause", response_model=CausalChain)
+async def root_cause(run_id: str, rt: Runtime = Depends(runtime)) -> CausalChain:
+    record = get_record(rt, run_id)
+    if not record.done:
+        raise HTTPException(409, "the run is still in progress; the root cause needs the finished trace")
+    try:
+        return await asyncio.to_thread(backward_slice, record.events, record.request.files)
+    except SliceError as exc:
+        raise HTTPException(404, str(exc)) from exc
+
+
+@router.get("/{run_id}/compare", response_model=BranchComparison)
+async def compare_runs(run_id: str, other: str, rt: Runtime = Depends(runtime)) -> BranchComparison:
+    """Compare a base run with a What-If branch (``other``): first diverging step + outcome differences."""
+    base, branch = get_record(rt, run_id), get_record(rt, other)
+    if not (base.done and branch.done):
+        raise HTTPException(409, "both runs must have finished before they can be compared")
+    return await asyncio.to_thread(compare, base.run_id, base.events, branch.run_id, branch.events)

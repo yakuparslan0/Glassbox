@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef } from "react";
+import { useMemo } from "react";
 import { useT } from "../../i18n";
 import { SPEEDS, usePlayback } from "../../store/playbackStore";
+import { useBranchStore } from "../../store/branchStore";
 import { getRunData, useRunStore } from "../../store/runStore";
 
-const BASE_STEPS_PER_SECOND = 6;
 const MAX_MARKERS = 150;
 
 /** One marker per ~pixel bucket so 20k steps never create 20k DOM nodes. */
@@ -25,6 +25,7 @@ function Scrubber({ total }: { total: number }): React.ReactElement {
   const step = usePlayback((s) => s.step);
   const goTo = usePlayback((s) => s.goTo);
   const version = useRunStore((s) => s.version);
+  const divergence = useBranchStore((s) => s.branches.find((b) => b.runId === s.activeRunId)?.comparison?.first_divergence_step ?? null);
   const markers = useMemo(() => {
     const d = getRunData();
     return {
@@ -54,6 +55,9 @@ function Scrubber({ total }: { total: number }): React.ReactElement {
         {markers.output.map((s) => (
           <span key={`o${s}`} className="gb-marker gb-marker-output" style={{ left: pos(s) }}>▪</span>
         ))}
+        {divergence !== null && (
+          <span className="gb-marker gb-marker-diverge" style={{ left: pos(divergence) }} title="what-if divergence">◆</span>
+        )}
         {markers.boundary.map((s) => (
           <span key={`b${s}`} className="gb-marker gb-marker-boundary" style={{ left: pos(s) }}>◆</span>
         ))}
@@ -65,41 +69,9 @@ function Scrubber({ total }: { total: number }): React.ReactElement {
 export function TransportBar(): React.ReactElement {
   const t = useT();
   const { step, playing, speed, follow } = usePlayback();
+  const api = usePlayback.getState;
   const total = useRunStore((s) => s.totalSteps);
   const status = useRunStore((s) => s.status);
-  const api = usePlayback.getState;
-  const acc = useRef(0);
-
-  useEffect(() => {
-    if (!playing) return;
-    const id = window.setInterval(() => {
-      acc.current += BASE_STEPS_PER_SECOND * usePlayback.getState().speed * 0.05;
-      const whole = Math.floor(acc.current);
-      if (whole < 1) return;
-      acc.current -= whole;
-      const { step: cur } = usePlayback.getState();
-      const max = getRunData().totalSteps;
-      if (cur >= max) {
-        if (useRunStore.getState().status !== "running") usePlayback.setState({ playing: false });
-        return;
-      }
-      usePlayback.setState({ step: Math.min(cur + whole, max), follow: false });
-    }, 50);
-    return () => window.clearInterval(id);
-  }, [playing]);
-
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent): void => {
-      const tag = (e.target as HTMLElement).tagName;
-      if (tag === "TEXTAREA" || tag === "INPUT" || tag === "SELECT" || (e.target as HTMLElement).closest(".monaco-editor")) return;
-      if (e.key === " ") { e.preventDefault(); api().togglePlay(); }
-      else if (e.key === "ArrowRight") api().next();
-      else if (e.key === "ArrowLeft") api().prev();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [api]);
-
   const btn = "gb-btn disabled:opacity-40";
   const none = total === 0;
   return (

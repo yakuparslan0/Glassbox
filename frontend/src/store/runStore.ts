@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ApiError, createRun, getMarkSweep } from "../api/http";
+import { ApiError, createRun, getMarkSweep, type OverridePayload } from "../api/http";
 import { connectRun, type RunConnection } from "../api/ws";
 import { t } from "../i18n";
 import { RunData } from "../lib/runData";
@@ -30,13 +30,53 @@ interface RunState {
   reportLoading: boolean;
   setSource: (source: string) => void;
   loadExample: (name: string, source: string) => void;
-  start: () => Promise<void>;
+  start: (overrides?: OverridePayload[]) => Promise<void>;
+  attach: (runId: string) => void;
   stop: () => void;
   analyze: () => Promise<void>;
 }
 
 let connection: RunConnection | null = null;
 let token = 0;
+
+function reset(source: string): number {
+  connection?.close();
+  const mine = ++token;
+  data = new RunData();
+  stateClient.reset();
+  usePlayback.getState().reset();
+  useRunStore.setState({
+    version: 0, totalSteps: 0, finished: null, limitDetail: null, errorText: null, report: null, reportLoading: false,
+    runSource: source,
+  });
+  return mine;
+}
+
+function follow(runId: string, mine: number): void {
+  const get = useRunStore.getState;
+  const set = useRunStore.setState;
+  set({ runId, status: "running" });
+  connection = connectRun(
+    runId,
+    (events: RunEvent[]) => {
+      if (mine !== token) return;
+      data.append(events);
+      stateClient.append(events);
+      const patch: Partial<RunState> = { version: get().version + 1, totalSteps: data.totalSteps };
+      for (const ev of events) {
+        if (ev.type === "limit_exceeded") patch.limitDetail = { limit: ev.limit, detail: ev.detail };
+        if (ev.type === "run_finished") {
+          patch.finished = ev;
+          patch.status = "finished";
+        }
+      }
+      set(patch);
+      if (usePlayback.getState().follow && data.totalSteps > 0) usePlayback.setState({ step: data.totalSteps });
+    },
+    () => mine === token && set({ status: get().finished ? "finished" : "error" }),
+    () => mine === token && set({ status: "error", errorText: t("err.ws") }),
+  );
+}
 
 export const useRunStore = create<RunState>((set, get) => ({
   entry: "main.py",
@@ -55,44 +95,23 @@ export const useRunStore = create<RunState>((set, get) => ({
   setSource: (source) => set({ source }),
   loadExample: (name, source) => set({ source, entry: name }),
 
-  start: async () => {
-    connection?.close();
-    const mine = ++token;
-    data = new RunData();
-    stateClient.reset();
-    usePlayback.getState().reset();
-    const source = get().source;
-    set({
-      status: "starting", runId: null, version: 0, totalSteps: 0, finished: null, limitDetail: null,
-      errorText: null, report: null, reportLoading: false, runSource: source,
-    });
+  start: async (overrides) => {
+    const mine = reset(get().source);
+    set({ status: "starting", runId: null, runSource: get().source });
     try {
-      const { run_id } = await createRun(source, get().entry, useUiStore.getState().settings);
+      const { run_id } = await createRun(get().source, get().entry, useUiStore.getState().settings, overrides);
       if (mine !== token) return;
-      set({ runId: run_id, status: "running" });
-      connection = connectRun(
-        run_id,
-        (events: RunEvent[]) => {
-          if (mine !== token) return;
-          data.append(events);
-          stateClient.append(events);
-          const patch: Partial<RunState> = { version: get().version + 1, totalSteps: data.totalSteps };
-          for (const ev of events) {
-            if (ev.type === "limit_exceeded") patch.limitDetail = { limit: ev.limit, detail: ev.detail };
-            if (ev.type === "run_finished") {
-              patch.finished = ev;
-              patch.status = "finished";
-            }
-          }
-          set(patch);
-          if (usePlayback.getState().follow && data.totalSteps > 0) usePlayback.setState({ step: data.totalSteps });
-        },
-        () => mine === token && set({ status: get().finished ? "finished" : "error" }),
-        () => mine === token && set({ status: "error", errorText: t("err.ws") }),
-      );
+      follow(run_id, mine);
     } catch (e) {
       if (mine === token) set({ status: "error", errorText: e instanceof ApiError ? e.message : String(e) });
     }
+  },
+
+  /** Load an already finished run (e.g. switching between What-If branches) by replaying its stored events. */
+  attach: (runId) => {
+    const mine = reset(get().source);
+    set({ status: "running", runId });
+    follow(runId, mine);
   },
 
   stop: () => connection?.cancel(),

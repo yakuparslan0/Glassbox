@@ -11,7 +11,9 @@ from ..sandbox.docker_backend import DockerBackend
 from ..sandbox.manager import SandboxManager
 from ..sandbox.subprocess_backend import SubprocessBackend
 from ..schemas.api import Health, LlmHealth
+from .routes_analysis import lab as lab_router
 from .routes_analysis import router as analysis_router
+from .routes_export import router as export_router
 from .routes_mentor import router as mentor_router
 from .routes_runs import router as runs_router
 from .store import Runtime
@@ -39,6 +41,8 @@ def create_app(
     app.include_router(runs_router)
     app.include_router(analysis_router)
     app.include_router(mentor_router)
+    app.include_router(lab_router)
+    app.include_router(export_router)
     app.include_router(ws_router)
 
     @app.get("/api/health", response_model=Health)

@@ -35,6 +35,16 @@ def _build_parser() -> argparse.ArgumentParser:
     report.add_argument("--seed", type=int, default=0)
     report.add_argument("--json", action="store_true", help="print the report as JSON instead of text")
 
+    export = sub.add_parser("export", help="run a script and export its trace (Replay HTML, Mermaid, SVG)")
+    export.add_argument("script", help="entry script to run")
+    export.add_argument("--include", action="append", default=[], metavar="FILE")
+    export.add_argument("--stdin", default="")
+    export.add_argument("--seed", type=int, default=0)
+    export.add_argument("--html", metavar="FILE", help="write a self-contained Replay HTML file")
+    export.add_argument("--mermaid", metavar="FILE", help="write the call graph as Mermaid text")
+    export.add_argument("--svg", metavar="FILE", help="write the call graph as SVG")
+    export.add_argument("--max-kb", type=int, default=1500, help="size limit of the embedded trace (thinned above it)")
+
     serve = sub.add_parser("serve", help="start the API server (127.0.0.1 unless GLASSBOX_ALLOW_REMOTE=true with docker)")
     serve.add_argument("--host", default=None)
     serve.add_argument("--port", type=int, default=None)
@@ -80,6 +90,30 @@ async def _report(args: argparse.Namespace) -> int:
     for f in report.findings:
         span = f"{f.start_line}" if f.start_line == f.end_line else f"{f.start_line}-{f.end_line}"
         print(f"  [{f.confidence:9}] {f.file}:{span:<7} {f.category:<20} {f.title}")
+    return 0
+
+
+async def _export(args: argparse.Namespace) -> int:
+    from .export.html_replay import build_replay
+    from .export.mermaid import to_mermaid, to_svg
+
+    if not (args.html or args.mermaid or args.svg):
+        print("error: choose at least one of --html, --mermaid, --svg", file=sys.stderr)
+        return 2
+    loaded = _load_files(args.script, args.include)
+    if loaded is None:
+        return 2
+    files, entry = loaded
+    events = [e async for e in SandboxManager().run(RunRequest(files=files, entry=entry, stdin=args.stdin, seed=args.seed))]
+    if args.html:
+        Path(args.html).write_text(build_replay(events, files[entry], entry, args.max_kb * 1000), encoding="utf-8")
+        print(f"replay -> {args.html}", file=sys.stderr)
+    if args.mermaid:
+        Path(args.mermaid).write_text(to_mermaid(events), encoding="utf-8")
+        print(f"mermaid -> {args.mermaid}", file=sys.stderr)
+    if args.svg:
+        Path(args.svg).write_text(to_svg(events), encoding="utf-8")
+        print(f"svg -> {args.svg}", file=sys.stderr)
     return 0
 
 
@@ -143,6 +177,8 @@ def main(argv: list[str] | None = None) -> int:
         return asyncio.run(_trace(args))
     if args.command == "report":
         return asyncio.run(_report(args))
+    if args.command == "export":
+        return asyncio.run(_export(args))
     if args.command == "serve":
         return _serve(args)
     return 2  # pragma: no cover - argparse enforces a known command

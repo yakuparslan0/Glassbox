@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GlassBox replay: crash_chain.py</title>
+<style>
+body{margin:0;font:14px system-ui,sans-serif;background:#11141a;color:#dde3ee;display:grid;grid-template-rows:auto 1fr auto;height:100vh}
+header{padding:8px 12px;background:#181c24;border-bottom:1px solid #2a303c} main{display:grid;grid-template-columns:1.2fr 1fr;min-height:0}
+#gb-source,#gb-side{overflow:auto;padding:8px;font:13px ui-monospace,Consolas,monospace} #gb-source .ln{white-space:pre;padding:0 4px} #gb-source .on{background:#1b3550;border-left:3px solid #4cc2ff}
+#gb-side h4{margin:8px 0 2px;font:11px system-ui;text-transform:uppercase;opacity:.6} #gb-out{white-space:pre-wrap;background:#0c0e13;padding:6px;min-height:2em}
+footer{display:flex;gap:8px;align-items:center;padding:8px 12px;background:#181c24;border-top:1px solid #2a303c} footer input{flex:1} button{background:#232938;color:#dde3ee;border:1px solid #2a303c;border-radius:6px;padding:2px 10px}
+.note{background:#3a2f17;color:#ffd98a;padding:4px 12px}
+</style></head><body>
+<header><b>GlassBox replay</b> &middot; crash_chain.py &middot; read-only, works offline</header>
+<main><div id="gb-source"><noscript>This replay needs JavaScript.</noscript></div>
+<div id="gb-side"><h4>Call stack</h4><div id="gb-stack"></div><h4>Globals</h4><div id="gb-globals"></div><h4>Output</h4><pre id="gb-out"></pre></div></main>
+<footer><button id="gb-prev">◀</button><button id="gb-play">▶</button><button id="gb-next">▶|</button>
+<input id="gb-slider" type="range" min="0" max="0" value="0"><span id="gb-label"></span></footer>
+
+<script id="gb-data" type="application/json">{"events":[{"seq":1,"type":"run_started","python":"3.14.5","tracer":"monitoring","seed":0,"limits":{"max_steps":20000,"timeout_s":10,"memory_mb":512,"max_output_kb":256},"filter":"boundaries","capabilities":{"whatif":true,"threads":false,"asyncio":false,"rlimit":false}},{"seq":2,"type":"call","step":1,"frame":1,"parent":null,"kind":"user","func":"<module>","qualname":"<module>","file":"crash_chain.py","line":1,"call_line":null,"args":{}},{"seq":3,"type":"line","step":2,"frame":1,"line":1,"delta":{"set":{},"del":[]}},{"seq":4,"type":"line","step":3,"frame":1,"line":4,"delta":{"set":{},"del":[]}},{"seq":5,"type":"line","step":4,"frame":1,"line":8,"delta":{"set":{"load_count":{"k":"func","t":"function","r":"<function load_count>"}},"del":[]}},{"seq":6,"type":"line","step":5,"frame":1,"line":12,"delta":{"set":{"compute_ratio":{"k":"func","t":"function","r":"<function compute_ratio>"}},"del":[]}},{"seq":7,"type":"line","step":6,"frame":1,"line":18,"delta":{"set":{"summarize":{"k":"func","t":"function","r":"<function summarize>"}},"del":[]}},{"seq":8,"type":"line","step":7,"frame":1,"line":23,"delta":{"set":{"main":{"k":"func","t":"function","r":"<function main>"}},"del":[]}},{"seq":9,"type":"call","step":8,"frame":2,"parent":1,"kind":"user","func":"main","qualname":"main","file":"crash_chain.py","line":18,"call_line":23,"args":{}},{"seq":10,"type":"line","step":9,"frame":2,"line":19,"delta":{"set":{},"del":[]}},{"seq":11,"type":"line","step":10,"frame":2,"line":20,"delta":{"set":{"data":{"ref":"o1"}},"del":[]},"heap":{"o1":{"k":"seq","t":"list","len":4,"items":[{"k":"prim","t":"int","r":"3"},{"k":"prim","t":"int","r":"5"},{"k":"prim","t":"int","r":"8"},{"k":"prim","t":"int","r":"13"}],"trunc":false,"size":88}}},{"seq":12,"type":"call","step":11,"frame":3,"parent":2,"kind":"user","func":"summarize","qualname":"summarize","file":"crash_chain.py","line":12,"call_line":20,"args":{"items":{"ref":"o1"}}},{"seq":13,"type":"line","step":12,"frame":3,"line":13,"delta":{"set":{},"del":[]}},{"seq":14,"type":"call","step":13,"frame":4,"parent":3,"kind":"user","func":"load_count","qualname":"load_count","file":"crash_chain.py","line":4,"call_line":13,"args":{"items":{"ref":"o1"}}},{"seq":15,"type":"line","step":14,"frame":4,"line":5,"delta":{"set":{},"del":[]}},{"seq":16,"type":"line","step":15,"frame":4,"line":5,"delta":{"set":{"x":{"k":"prim","t":"int","r":"3"}},"del":[]}},{"seq":17,"type":"line","step":16,"frame":4,"line":5,"delta":{"set":{"x":{"k":"prim","t":"int","r":"5"}},"del":[]}},{"seq":18,"type":"line","step":17,"frame":4,"line":5,"delta":{"set":{"x":{"k":"prim","t":"int","r":"8"}},"del":[]}},{"seq":19,"type":"line","step":18,"frame":4,"line":5,"delta":{"set":{"x":{"k":"prim","t":"int","r":"13"}},"del":[]}},{"seq":20,"type":"return","step":19,"frame":4,"value":{"k":"prim","t":"int","r":"0"}},{"seq":21,"type":"line","step":20,"frame":3,"line":14,"delta":{"set":{"count":{"k":"prim","t":"int","r":"0"}},"del":[]}},{"seq":22,"type":"line","step":21,"frame":3,"line":15,"delta":{"set":{"total":{"k":"prim","t":"int","r":"29"}},"del":[]}},{"seq":23,"type":"call","step":22,"frame":5,"parent":3,"kind":"user","func":"compute_ratio","qualname":"compute_ratio","file":"crash_chain.py","line":8,"call_line":15,"args":{"total":{"k":"prim","t":"int","r":"29"},"count":{"k":"prim","t":"int","r":"0"}}},{"seq":24,"type":"line","step":23,"frame":5,"line":9,"delta":{"set":{},"del":[]}},{"seq":25,"type":"exception","step":24,"frame":5,"line":9,"exc_type":"ZeroDivisionError","message":"division by zero","handled":false},{"seq":26,"type":"return","step":25,"frame":5,"value":{"k":"prim","t":"NoneType","r":"None"},"unwound":true},{"seq":27,"type":"exception","step":26,"frame":3,"line":15,"exc_type":"ZeroDivisionError","message":"division by zero","handled":false},{"seq":28,"type":"return","step":27,"frame":3,"value":{"k":"prim","t":"NoneType","r":"None"},"unwound":true},{"seq":29,"type":"exception","step":28,"frame":2,"line":20,"exc_type":"ZeroDivisionError","message":"division by zero","handled":false},{"seq":30,"type":"return","step":29,"frame":2,"value":{"k":"prim","t":"NoneType","r":"None"},"unwound":true},{"seq":31,"type":"exception","step":30,"frame":1,"line":23,"exc_type":"ZeroDivisionError","message":"division by zero","handled":false},{"seq":32,"type":"return","step":31,"frame":1,"value":{"k":"prim","t":"NoneType","r":"None"},"unwound":true},{"seq":33,"type":"output","step":31,"stream":"stderr","text":"Traceback (most recent call last):\n  File \"crash_chain.py\", line 23, in <module>\n    main()\n    ~~~~^^\n  File \"crash_chain.py\", line 20, in main\n    print(\"average of big items:\", summarize(data))\n                                   ~~~~~~~~~^^^^^^\n  File \"crash_chain.py\", line 15, in summarize\n    return compute_ratio(total, count)\n  File \"crash_chain.py\", line 9, in compute_ratio\n    return total / count\n           ~~~~~~^~~~~~~\nZeroDivisionError: division by zero\n"},{"seq":34,"type":"run_finished","status":"exception","exit_code":1,"steps":31,"wall_ms":7,"line_hits":{"crash_chain.py":{"1":1,"4":1,"5":5,"8":1,"9":1,"12":1,"13":1,"14":1,"15":1,"18":1,"19":1,"20":1,"23":1}},"func_stats":{"<module>":{"calls":1,"steps":9,"self_ns":308900,"total_ns":1285600},"main":{"calls":1,"steps":5,"self_ns":300100,"total_ns":976700},"summarize":{"calls":1,"steps":6,"self_ns":392400,"total_ns":676600},"load_count":{"calls":1,"steps":7,"self_ns":187700,"total_ns":187700},"compute_ratio":{"calls":1,"steps":4,"self_ns":96500,"total_ns":96500}},"executed_lines":{"crash_chain.py":[1,4,5,8,9,12,13,14,15,18,19,20,23]},"repeat_calls":[],"detail":"ZeroDivisionError: division by zero"}],"source":"\"\"\"A wrong value is created early and only blows up three functions later (ZeroDivisionError).\"\"\"\n\n\ndef load_count(items):\n    return len([x for x in items if x > 100])\n\n\ndef compute_ratio(total, count):\n    return total / count\n\n\ndef summarize(items):\n    count = load_count(items)\n    total = sum(items)\n    return compute_ratio(total, count)\n\n\ndef main():\n    data = [3, 5, 8, 13]\n    print(\"average of big items:\", summarize(data))\n\n\nmain()\n","title":"crash_chain.py","info":{"thinned":false,"full_bytes":5648}}</script>
+<script>
+(function () {
+  var el = typeof document !== "undefined" ? document.getElementById("gb-data") : null;
+  var DATA = JSON.parse(el ? el.textContent : globalThis.__GB_DATA__);
+  var STEP = {call: 1, line: 1, "return": 1, exception: 1};
+  var events = DATA.events;
+  function assign(t, d) { if (!d) return; var k; for (k in (d.set || {})) t[k] = d.set[k]; (d.del || []).forEach(function (n) { delete t[n]; }); }
+  function fresh() { return {stack: [], globals: {}, heap: {}}; }
+  function apply(s, ev) {
+    if (ev.heap) for (var h in ev.heap) s.heap[h] = ev.heap[h];
+    if (ev.type === "keyframe") {
+      s.stack = ev.stack.map(function (f) { return {frame: f.frame, func: f.func, line: f.line, locals: Object.assign({}, f.locals)}; });
+      s.globals = Object.assign({}, ev.globals); s.heap = Object.assign({}, ev.heap);
+    } else if (ev.type === "call") {
+      if (ev.kind === "user") s.stack.push({frame: ev.frame, func: ev.func, line: ev.line, locals: Object.assign({}, ev.args)});
+      assign(s.globals, ev.globals_delta);
+    } else if (ev.type === "line") {
+      var f = s.stack.filter(function (x) { return x.frame === ev.frame; })[0];
+      if (f) { f.line = ev.line; assign(ev.frame === 1 ? s.globals : f.locals, ev.delta); }
+      assign(s.globals, ev.globals_delta);
+    } else if (ev.type === "return") {
+      assign(s.globals, ev.globals_delta);
+      if (ev.kind !== "boundary") s.stack = s.stack.filter(function (x) { return x.frame !== ev.frame; });
+    } else if (ev.type === "exception") { assign(s.globals, ev.globals_delta); }
+  }
+  // step k -> state after the last event BEFORE the next step event (same rule as the app)
+  var stepEvents = []; // indexes of step-creating events (or of keyframes when the trace was thinned)
+  events.forEach(function (e, i) { if (DATA.info.thinned ? e.type === "keyframe" : STEP[e.type]) stepEvents.push(i); });
+  function stateAt(k) {
+    var end = k + 1 < stepEvents.length ? stepEvents[k + 1] - 1 : events.length - 1;
+    var start = 0, i;
+    for (i = end; i >= 0; i--) if (events[i].type === "keyframe") { start = i; break; }
+    var s = fresh();
+    for (i = start; i <= end; i++) apply(s, events[i]);
+    return s;
+  }
+  function outputAt(k) {
+    var end = k + 1 < stepEvents.length ? stepEvents[k + 1] - 1 : events.length - 1, t = "", i;
+    for (i = 0; i <= end; i++) if (events[i].type === "output") t += events[i].text;
+    return t;
+  }
+  function show(v, heap, d) {
+    if (v.ref) { var e = heap[v.ref]; if (!e) return "<" + v.ref + ">"; if ((d || 0) > 1) return e.t + "…";
+      if (e.k === "seq") return "[" + e.items.map(function (x) { return show(x, heap, (d || 0) + 1); }).join(", ") + "]";
+      if (e.k === "map") return "{" + e.pairs.map(function (p) { return show(p[0], heap, (d || 0) + 1) + ": " + show(p[1], heap, (d || 0) + 1); }).join(", ") + "}";
+      if (e.k === "obj") return e.t + "(" + Object.keys(e.attrs).map(function (k) { return k + "=" + show(e.attrs[k], heap, (d || 0) + 1); }).join(", ") + ")";
+      return e.r || e.t; }
+    return v.r;
+  }
+  if (typeof module !== "undefined") module.exports = {stateAt: stateAt, outputAt: outputAt, steps: function () { return stepEvents.length; }, show: show};
+  if (typeof document === "undefined" || !document.getElementById("gb-slider")) return;
+  var slider = document.getElementById("gb-slider"), cur = 0, timer = null;
+  var srcLines = DATA.source.split("\n");
+  var srcEl = document.getElementById("gb-source");
+  srcEl.innerHTML = "";
+  srcLines.forEach(function (l, i) { var d = document.createElement("div"); d.className = "ln"; d.id = "ln" + (i + 1); d.textContent = (i + 1 + "    ").slice(0, 4) + l; srcEl.appendChild(d); });
+  slider.max = Math.max(stepEvents.length - 1, 0);
+  function render(k) {
+    cur = k; slider.value = k;
+    var s = stateAt(k), top = s.stack[s.stack.length - 1];
+    Array.prototype.forEach.call(document.querySelectorAll(".ln.on"), function (n) { n.classList.remove("on"); });
+    if (top) { var n = document.getElementById("ln" + top.line); if (n) { n.classList.add("on"); n.scrollIntoView({block: "nearest"}); } }
+    var rows = s.stack.map(function (f) { return "<b>" + f.func + "</b>:" + f.line + "<br>" + Object.keys(f.locals).map(function (n) { return "&nbsp;&nbsp;" + n + " = " + esc(show(f.locals[n], s.heap)); }).join("<br>"); });
+    document.getElementById("gb-stack").innerHTML = rows.reverse().join("<hr>");
+    document.getElementById("gb-globals").innerHTML = Object.keys(s.globals).filter(function (n) { return String(s.globals[n].r || "").indexOf("<function") !== 0; }).map(function (n) { return n + " = " + esc(show(s.globals[n], s.heap)); }).join("<br>");
+    document.getElementById("gb-out").textContent = outputAt(k);
+    document.getElementById("gb-label").textContent = "step " + (k + 1) + " / " + stepEvents.length;
+  }
+  function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  slider.oninput = function () { render(Number(slider.value)); };
+  document.getElementById("gb-prev").onclick = function () { render(Math.max(0, cur - 1)); };
+  document.getElementById("gb-next").onclick = function () { render(Math.min(stepEvents.length - 1, cur + 1)); };
+  document.getElementById("gb-play").onclick = function () {
+    if (timer) { clearInterval(timer); timer = null; this.textContent = "▶"; return; }
+    this.textContent = "⏸"; var b = this;
+    timer = setInterval(function () { if (cur >= stepEvents.length - 1) { clearInterval(timer); timer = null; b.textContent = "▶"; return; } render(cur + 1); }, 120);
+  };
+  document.addEventListener("keydown", function (e) { if (e.key === "ArrowRight") render(Math.min(stepEvents.length - 1, cur + 1)); if (e.key === "ArrowLeft") render(Math.max(0, cur - 1)); });
+  if (stepEvents.length) render(0);
+})();
+</script>
+</body></html>

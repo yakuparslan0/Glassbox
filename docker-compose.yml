@@ -1,6 +1,9 @@
-# Phase 2 scope: builds the locked-down runner image used by SANDBOX_MODE=docker.
-# (The API/frontend images arrive with the Dockerfiles of Phase 5.)
-#   docker compose --profile build build runner
+# Images for GlassBox. NOT verified on the development machine (Docker is not installed there).
+#   docker compose --profile build build runner     # only the locked-down runner image
+#   docker compose up --build                        # API + UI (Linux host: the API starts runner containers)
+#
+# Runner containers are started by the API through the Docker socket. Their bind mounts are resolved by the Docker
+# daemon on the HOST, so the API's temp directory must exist at the same path on the host and in the API container.
 services:
   runner:
     image: glassbox-runner
@@ -13,3 +16,30 @@ services:
     cap_drop: [ALL]
     security_opt: ["no-new-privileges:true"]
     user: "65534:65534"
+
+  api:
+    image: glassbox-api
+    build:
+      context: .
+      dockerfile: docker/api.Dockerfile
+    environment:
+      SANDBOX_MODE: docker
+      GLASSBOX_ALLOW_REMOTE: "true"
+      GLASSBOX_HOST: 0.0.0.0
+      GLASSBOX_CORS_ORIGINS: '["http://localhost:8080"]'
+      TMPDIR: /var/lib/glassbox-runs
+    env_file:
+      - path: .env
+        required: false
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/glassbox-runs:/var/lib/glassbox-runs
+    expose: ["8000"]
+
+  web:
+    image: glassbox-web
+    build:
+      context: .
+      dockerfile: docker/web.Dockerfile
+    depends_on: [api]
+    ports: ["127.0.0.1:8080:80"]

@@ -200,3 +200,45 @@ used, `fallback` if it becomes unavailable, `scene_done`. The UI loads Layer A a
 the LLM only on an explicit click (quota / privacy: source code leaves the machine only then).
 
 **Timeline sentences** stay client-side (`lib/format.ts`); the backend narrator works on scenes, not single steps.
+
+## Phase 5
+
+**What-If.** Overrides (`step`, `frame_depth` = index in the stack of USER frames, module frame = 0, `name`,
+`value_literal`) are checked with `ast.literal_eval` in the API (HTTP 422 for anything else, e.g. `__import__('os')`) and
+again in the runner. The override is applied when the runner reaches step `step`, so the value shown at step k can be
+edited "at step k". Branches are ordinary runs; `GET /api/runs/{base}/compare?other={branch}` reports the first
+diverging step (first step whose event differs once timings, `seq` and heap labels are removed), outputs, top-level
+return values, step counts and status. The UI shows the main run and ONE branch at a time (switchable) with a divergence
+marker on the scrubber and a summary line; it does not draw two overlaid tracks.
+
+**Root-Cause Rewind.** Backward slice over the recorded deltas. A delta on a line event shows the effect of the
+PREVIOUS line, so a write is attributed to that previous line. Links: assignments, arguments (parameter -> call site),
+returns (a value assigned from a call -> the callee's return line) and module globals; function/class objects are
+dropped as noise; re-runs of the same statement in a loop keep only the most recent write. Depth limit 6, 40 links.
+The mentor receives the chain for the exception scene (Layer A sentence and LLM digest).
+
+**Big-O lab.** The driver is appended to the user's file (input built on one module line, the measured call on the last
+line); the measure is the number of steps between that call's `call` and `return` events, so input construction and any
+`__main__` block are not counted. Models: 1, log n, n, n log n, n^2, n^3, 2^n, fitted as y = a*f(n) + b by least squares;
+R^2 decides, and within 0.001 of the best R^2 the simpler model wins; negative slopes score 0. Sizes stop growing when a
+run hits the step limit or the 10 s watchdog (reported as `stopped_early`); at least 4 points are required. The static
+estimate (loop depth, recursion shape) is shown beside the measurement and a disagreement is flagged, as for iterative
+binary search (static: O(n), measured: O(log n)). Extra arguments accept only literals or `$n $last $first $missing`.
+
+**Exports.** Mermaid uses generated node ids and numeric entity codes for every character that could break a quoted
+label; a regex grammar test guards it (the Mermaid CLI is not used). The Replay HTML embeds the trace as JSON in a
+`<script type="application/json">` (with `</` escaped), the source and a vanilla-JS player; it contains no external
+reference (tested by scanning the file). Above the size limit (default 1.5 MB) the trace is thinned by doubling the
+keyframe stride; the player then jumps between snapshots and says so. The player's reducer is executed in `node` by a
+test and compared with the recorded run.
+
+**Presentation mode.** Same components, editor read-only with a larger font, call graph and narration strip only.
+Keys: Space, left/right, Shift+left/right (scene), `[` `]` (speed), `F` (fullscreen), Esc. While auto-playing, playback
+stops at the start of each scene for `clamp(45 ms x text length, 1.5 s, 8 s) / speed` so the narration can be read.
+
+**Productization.** `make dev` runs `scripts/dev.py` (API + Vite, installs the frontend dependencies on first use).
+`make` is not installed on the Windows development machine, so the targets were verified by running their commands
+directly. The CI workflow and the Docker images have NOT been executed. The compose file mounts the Docker socket and a
+host directory at an identical path for the runner bind mounts (Linux only, untested).
+
+**Example artefacts** in `docs/examples/` are real output of `glassbox export` (not hand-written).

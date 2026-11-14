@@ -21,4 +21,9 @@ modules the UI uses (RunData, StateBuilder, GraphBuilder, heap graph) through th
 | 9 | Mentor tab / narration strip: Layer A text appears after a run, scenes follow the playhead, "Explain with the LLM" streams and falls back with a notice | backend SSE tests (mock LLM, exhausted keys) + live test through the proxy + SSE parser unit tests | stream PASS · rendering `UI` |
 | 10 | Refactor tab: suggestion -> diff -> Verify -> badge -> Apply and re-run -> Undo; broken disables Apply; behaviour change asks for confirmation | backend tests for every verdict; store/panel typed and built | `UI` |
 
+| 11 | What-If: pencil next to a variable -> dialog -> branch runs -> branch bar shows divergence step and summary; switching main/branch works; a non-literal value shows the 422 message | live test (`live5`) for the API flow incl. rejection; dialog/bar typed and built | API PASS · `UI` |
+| 12 | Lab tab: "find where the failure started" shows clickable chain chips; Big-O chart shows points + dashed fit, the conflict warning for binary search | live test for both endpoints and the chart geometry | data PASS · rendering `UI` |
+| 13 | Presentation mode: large editor + graph + narration, auto-play pauses per scene, Shift+arrows jump scenes, `F`, `Esc` | scene helpers unit-tested; layout typed and built | helpers PASS · `UI` |
+| 14 | Export menu downloads the Replay HTML (open it offline in a browser and press play), SVG and Mermaid | endpoints + offline scan + node-executed player test | files PASS · open in a browser `UI` |
+
 Run the `UI` rows once in a browser before relying on Phase 3.

@@ -12,6 +12,53 @@ export interface AutofixResult {
   "skipped": Array<{ [key: string]: string }>;
 }
 
+export interface BigOFit {
+  "model": "1" | "log n" | "n" | "n log n" | "n^2" | "n^3" | "2^n";
+  "label": string;
+  "r2": number;
+  "a": number;
+  "b": number;
+  "predicted": Array<number>;
+}
+
+export interface BigOPoint {
+  "n": number;
+  "steps": number;
+}
+
+export interface BigOReport {
+  "func": string;
+  "generator": string;
+  "points": Array<BigOPoint>;
+  "best": BigOFit;
+  "runner_up": BigOFit | null;
+  "fits": Array<BigOFit>;
+  "static": StaticEstimate;
+  "conflict": boolean;
+  "note": string;
+  "stopped_early": string | null;
+}
+
+export interface BigORequest {
+  "files": Array<SourceFile>;
+  "entry"?: string;
+  "func": string;
+  "generator"?: "random_ints" | "sorted_ints" | "reversed_ints" | "int_n" | "string_n";
+  "sizes"?: Array<number> | null;
+  "extra_args"?: Array<string>;
+  "seed"?: number;
+}
+
+export interface BranchComparison {
+  "base_run_id": string;
+  "branch_run_id": string;
+  "first_divergence_step": number | null;
+  "base": RunSide;
+  "branch": RunSide;
+  "output_equal": boolean;
+  "summary": Array<string>;
+}
+
 export interface CallBoundary {
   "v": 1;
   "seq": number;
@@ -58,6 +105,26 @@ export interface Capabilities {
   "threads": boolean;
   "asyncio": boolean;
   "rlimit": boolean;
+}
+
+export interface CausalChain {
+  "exception_type": string;
+  "message": string;
+  "step": number;
+  "links": Array<CausalLink>;
+  "truncated": boolean;
+}
+
+export interface CausalLink {
+  "step": number;
+  "frame": number;
+  "file": string;
+  "line": number;
+  "kind": "error" | "assignment" | "argument" | "global" | "return";
+  "name": string;
+  "value": string | null;
+  "depth": number;
+  "text": string;
 }
 
 export interface Delta {
@@ -379,6 +446,14 @@ export interface RunFinished {
   "profile"?: Record<string, unknown> | null;
 }
 
+export interface RunSide {
+  "steps": number;
+  "status": string;
+  "stdout": string;
+  "returns": Array<string>;
+  "exception": string | null;
+}
+
 export interface RunStarted {
   "v": 1;
   "seq": number;
@@ -442,6 +517,12 @@ export interface StackFrame {
   "func": string;
   "line": number;
   "locals": { [key: string]: Prim | Ref | OtherValue };
+}
+
+export interface StaticEstimate {
+  "model": string | null;
+  "label": string;
+  "basis": string;
 }
 
 export interface StaticReport {

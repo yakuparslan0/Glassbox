@@ -15,6 +15,7 @@ T = {
         "module": "Modül düzeyindeki kod çalıştı ({steps} adım)",
         "exc": "{type}: {message} — {line}. satırda",
         "exc_values": "Bu satırdaki değerler: {values}",
+        "chain": "Kök neden zinciri (kaynaktan hataya): {chain}",
         "title_call": "{func} çağrısı",
         "title_module": "Modül düzeyi kod",
         "title_exc": "{func} hatası",
@@ -29,6 +30,7 @@ T = {
         "module": "Module-level code ran ({steps} steps)",
         "exc": "{type}: {message} — at line {line}",
         "exc_values": "Values on that line: {values}",
+        "chain": "Root-cause chain (origin to failure): {chain}",
         "title_call": "Call to {func}",
         "title_module": "Module-level code",
         "title_exc": "{func} error",
@@ -68,6 +70,9 @@ def narrate_scene(scene: Scene, lang: str) -> str:
             sentences.append(t["exc"].format(type=ex["type"], message=ex["message"], line=ex["line"]) + ".")
             if ex["values"]:
                 sentences.append(t["exc_values"].format(values=", ".join(f"`{k}` = {v}" for k, v in ex["values"].items())) + ".")
+        chain = f.get("chain")
+        if chain:
+            sentences.append(t["chain"].format(chain=" → ".join(chain)) + ".")
     else:
         text = t["module"].format(steps=scene.measured.get("steps", 0))
         if f["repeat_line"]:

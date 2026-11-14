@@ -88,3 +88,10 @@ body { background: var(--bg); color: var(--text); font-family: system-ui, "Segoe
 
 .gb-card { display: block; background: #1b2130; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; color: var(--text); cursor: pointer; }
 .gb-card-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+
+.gb-marker-diverge { color: #ffd54a; top: 8px; font-size: 14px; }
+.gb-chip-on { border-color: var(--accent); background: #1d3550; }
+.gb-modal { position: fixed; inset: 0; z-index: 60; background: rgba(0, 0, 0, .55); display: grid; place-items: center; }
+.gb-modal-box { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; width: min(440px, 92vw); }
+.gb-present { font-size: 18px; }
+.gb-present .gb-narration { font-size: 22px; line-height: 1.4; padding: 14px 24px; }

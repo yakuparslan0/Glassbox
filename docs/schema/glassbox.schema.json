@@ -67,6 +67,272 @@
       "title": "AutofixResult",
       "type": "object"
     },
+    "BigOFit": {
+      "additionalProperties": false,
+      "properties": {
+        "a": {
+          "title": "A",
+          "type": "number"
+        },
+        "b": {
+          "title": "B",
+          "type": "number"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "model": {
+          "enum": [
+            "1",
+            "log n",
+            "n",
+            "n log n",
+            "n^2",
+            "n^3",
+            "2^n"
+          ],
+          "title": "Model",
+          "type": "string"
+        },
+        "predicted": {
+          "items": {
+            "type": "number"
+          },
+          "title": "Predicted",
+          "type": "array"
+        },
+        "r2": {
+          "title": "R2",
+          "type": "number"
+        }
+      },
+      "required": [
+        "model",
+        "label",
+        "r2",
+        "a",
+        "b",
+        "predicted"
+      ],
+      "title": "BigOFit",
+      "type": "object"
+    },
+    "BigOPoint": {
+      "additionalProperties": false,
+      "properties": {
+        "n": {
+          "title": "N",
+          "type": "integer"
+        },
+        "steps": {
+          "title": "Steps",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "n",
+        "steps"
+      ],
+      "title": "BigOPoint",
+      "type": "object"
+    },
+    "BigOReport": {
+      "additionalProperties": false,
+      "properties": {
+        "best": {
+          "$ref": "#/$defs/BigOFit"
+        },
+        "conflict": {
+          "title": "Conflict",
+          "type": "boolean"
+        },
+        "fits": {
+          "items": {
+            "$ref": "#/$defs/BigOFit"
+          },
+          "title": "Fits",
+          "type": "array"
+        },
+        "func": {
+          "title": "Func",
+          "type": "string"
+        },
+        "generator": {
+          "title": "Generator",
+          "type": "string"
+        },
+        "note": {
+          "title": "Note",
+          "type": "string"
+        },
+        "points": {
+          "items": {
+            "$ref": "#/$defs/BigOPoint"
+          },
+          "title": "Points",
+          "type": "array"
+        },
+        "runner_up": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/BigOFit"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "static": {
+          "$ref": "#/$defs/StaticEstimate"
+        },
+        "stopped_early": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stopped Early"
+        }
+      },
+      "required": [
+        "func",
+        "generator",
+        "points",
+        "best",
+        "runner_up",
+        "fits",
+        "static",
+        "conflict",
+        "note",
+        "stopped_early"
+      ],
+      "title": "BigOReport",
+      "type": "object"
+    },
+    "BigORequest": {
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "default": "main.py",
+          "title": "Entry",
+          "type": "string"
+        },
+        "extra_args": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 4,
+          "title": "Extra Args",
+          "type": "array"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/$defs/SourceFile"
+          },
+          "title": "Files",
+          "type": "array"
+        },
+        "func": {
+          "title": "Func",
+          "type": "string"
+        },
+        "generator": {
+          "default": "random_ints",
+          "enum": [
+            "random_ints",
+            "sorted_ints",
+            "reversed_ints",
+            "int_n",
+            "string_n"
+          ],
+          "title": "Generator",
+          "type": "string"
+        },
+        "seed": {
+          "default": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "sizes": {
+          "anyOf": [
+            {
+              "items": {
+                "type": "integer"
+              },
+              "maxItems": 14,
+              "type": "array"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Sizes"
+        }
+      },
+      "required": [
+        "files",
+        "func"
+      ],
+      "title": "BigORequest",
+      "type": "object"
+    },
+    "BranchComparison": {
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/RunSide"
+        },
+        "base_run_id": {
+          "title": "Base Run Id",
+          "type": "string"
+        },
+        "branch": {
+          "$ref": "#/$defs/RunSide"
+        },
+        "branch_run_id": {
+          "title": "Branch Run Id",
+          "type": "string"
+        },
+        "first_divergence_step": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "First Divergence Step"
+        },
+        "output_equal": {
+          "title": "Output Equal",
+          "type": "boolean"
+        },
+        "summary": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Summary",
+          "type": "array"
+        }
+      },
+      "required": [
+        "base_run_id",
+        "branch_run_id",
+        "first_divergence_step",
+        "base",
+        "branch",
+        "output_equal",
+        "summary"
+      ],
+      "title": "BranchComparison",
+      "type": "object"
+    },
     "CallBoundary": {
       "additionalProperties": false,
       "properties": {
@@ -458,6 +724,111 @@
         "rlimit"
       ],
       "title": "Capabilities",
+      "type": "object"
+    },
+    "CausalChain": {
+      "additionalProperties": false,
+      "properties": {
+        "exception_type": {
+          "title": "Exception Type",
+          "type": "string"
+        },
+        "links": {
+          "items": {
+            "$ref": "#/$defs/CausalLink"
+          },
+          "title": "Links",
+          "type": "array"
+        },
+        "message": {
+          "title": "Message",
+          "type": "string"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "truncated": {
+          "title": "Truncated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "exception_type",
+        "message",
+        "step",
+        "links",
+        "truncated"
+      ],
+      "title": "CausalChain",
+      "type": "object"
+    },
+    "CausalLink": {
+      "additionalProperties": false,
+      "properties": {
+        "depth": {
+          "title": "Depth",
+          "type": "integer"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "frame": {
+          "title": "Frame",
+          "type": "integer"
+        },
+        "kind": {
+          "enum": [
+            "error",
+            "assignment",
+            "argument",
+            "global",
+            "return"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "line": {
+          "title": "Line",
+          "type": "integer"
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "step": {
+          "title": "Step",
+          "type": "integer"
+        },
+        "text": {
+          "title": "Text",
+          "type": "string"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "step",
+        "frame",
+        "file",
+        "line",
+        "kind",
+        "name",
+        "value",
+        "depth",
+        "text"
+      ],
+      "title": "CausalLink",
       "type": "object"
     },
     "Delta": {
@@ -2490,6 +2861,50 @@
       "title": "RunFinished",
       "type": "object"
     },
+    "RunSide": {
+      "additionalProperties": false,
+      "properties": {
+        "exception": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Exception"
+        },
+        "returns": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Returns",
+          "type": "array"
+        },
+        "status": {
+          "title": "Status",
+          "type": "string"
+        },
+        "stdout": {
+          "title": "Stdout",
+          "type": "string"
+        },
+        "steps": {
+          "title": "Steps",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "steps",
+        "status",
+        "stdout",
+        "returns",
+        "exception"
+      ],
+      "title": "RunSide",
+      "type": "object"
+    },
     "RunStarted": {
       "additionalProperties": false,
       "properties": {
@@ -2929,6 +3344,37 @@
         "locals"
       ],
       "title": "StackFrame",
+      "type": "object"
+    },
+    "StaticEstimate": {
+      "additionalProperties": false,
+      "properties": {
+        "basis": {
+          "title": "Basis",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Model"
+        }
+      },
+      "required": [
+        "model",
+        "label",
+        "basis"
+      ],
+      "title": "StaticEstimate",
       "type": "object"
     },
     "StaticReport": {

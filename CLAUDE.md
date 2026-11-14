@@ -79,7 +79,9 @@ Findings: `{id,category,severity,confidence,file,start_line,end_line,title,evide
   (data path verified live + vitest; visual checks in docs/MANUAL_CHECKLIST.md still need a human in a browser)
 - Phase 4 (LLM service, keyring, mentor narration SSE, autofix, refactor proposals, verified refactoring, UI panels): DONE
   (Groq/Gemini live calls untested: no keys; everything else verified with fake HTTP / mock provider)
-- Phase 5: not started
+- Phase 5 (What-If, root cause, Big-O lab, Mermaid/SVG/Replay export, presentation mode, README/CI/Docker/make dev): DONE
+  (CI workflow, Docker images, POSIX rlimit path and `make` itself never executed on the Windows dev box; UI rows of
+  docs/MANUAL_CHECKLIST.md still need a human in a browser)
 
 ## Dev environment notes
 - Python venv lives outside the OneDrive-synced tree: `%USERPROFILE%\.venvs\glassbox` (Python 3.14).

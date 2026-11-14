@@ -12,6 +12,7 @@ from fastapi.responses import StreamingResponse
 
 from ..analysis import marksweep
 from ..analysis.common import SourceError
+from ..analysis.slicing import SliceError, backward_slice
 from ..llm.base import LlmUnavailable
 from ..llm.prompts import new_nonce, scene_messages
 from ..mentor import narrator
@@ -68,6 +69,15 @@ async def narrate(
         raise HTTPException(409, "the run is still in progress; narration needs the finished trace")
     scenes = await asyncio.to_thread(build_scenes, record.events, record.request.files, from_step, to_step)
     use_llm = llm and rt.llm.available
+    try:  # the mentor explains an uncaught exception from its causal chain (spec 7.4)
+        chain = await asyncio.to_thread(backward_slice, record.events, record.request.files)
+        texts = [link.text for link in chain.links]
+        for scene in scenes:
+            if scene.kind == "exception":
+                scene.facts["chain"] = texts
+                scene.digest_text += "\ncausal chain (origin first):\n" + "\n".join(texts)
+    except SliceError:
+        pass
 
     async def stream() -> AsyncIterator[str]:
         yield _sse("meta", {

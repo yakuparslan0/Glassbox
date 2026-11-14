@@ -1,16 +1,27 @@
-# Targets are added as phases land. PYTHON can point at any venv interpreter.
+# GlassBox developer commands. PYTHON can point at any venv interpreter:  make test PYTHON=~/.venvs/glassbox/bin/python
 PYTHON ?= python
 
-.PHONY: install test lint schema schema-check serve docker-runner frontend-install frontend-dev frontend-build frontend-test
+.PHONY: install dev test test-backend test-frontend lint schema schema-check build serve docker-runner docker
 
 install:
 	$(PYTHON) -m pip install -e "backend[dev]"
+	cd frontend && npm ci
 
-test:
+# API + UI together (installs the frontend dependencies on first use)
+dev:
+	$(PYTHON) scripts/dev.py
+
+test: test-backend test-frontend
+
+test-backend:
 	$(PYTHON) -m pytest backend/tests
+
+test-frontend:
+	cd frontend && npx vitest run
 
 lint:
 	$(PYTHON) -m ruff check backend scripts
+	cd frontend && npx tsc --noEmit
 
 # Pydantic models -> docs/schema/glassbox.schema.json + frontend/src/types/generated.ts
 schema:
@@ -19,21 +30,17 @@ schema:
 schema-check:
 	$(PYTHON) scripts/gen_types.py --check
 
+build:
+	cd frontend && npm run build
+
 serve:
 	$(PYTHON) -m glassbox.cli serve
 
-# Build the locked-down runner image used by SANDBOX_MODE=docker
+# the locked-down runner image used by SANDBOX_MODE=docker
 docker-runner:
 	docker build -f docker/runner.Dockerfile -t glassbox-runner backend
 
-frontend-install:
-	cd frontend && npm install
-
-frontend-dev:
-	cd frontend && npm run dev
-
-frontend-build:
-	cd frontend && npm run build
-
-frontend-test:
-	cd frontend && npx vitest run
+# runner + API + web images (read docs/SECURITY.md before exposing anything)
+docker: docker-runner
+	docker build -f docker/api.Dockerfile -t glassbox-api .
+	docker build -f docker/web.Dockerfile -t glassbox-web .

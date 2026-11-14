@@ -26,6 +26,7 @@ export function CodeEditor(): React.ReactElement {
   const view = useViewStore((s) => s.state);
   const reveal = useUiStore((s) => s.reveal);
   const inline = useUiStore((s) => s.settings.inlineValues);
+  const presenting = useUiStore((s) => s.presenting);
 
   const editorRef = useRef<monaco.editor.IStandaloneCodeEditor | null>(null);
   const cursor = useRef<monaco.editor.IEditorDecorationsCollection | null>(null);
@@ -131,7 +132,8 @@ export function CodeEditor(): React.ReactElement {
       options={{
         glyphMargin: true,
         minimap: { enabled: false },
-        fontSize: 14,
+        fontSize: presenting ? 20 : 14,
+        readOnly: presenting,
         scrollBeyondLastLine: false,
         automaticLayout: true,
         lineNumbersMinChars: 3,

@@ -68,3 +68,13 @@ class Health(_Model):
     status: Literal["ok"]
     llm: LlmHealth
     sandbox_mode: Literal["subprocess", "docker"]
+
+
+class BigORequest(_Model):
+    files: list[SourceFile]
+    entry: str = "main.py"
+    func: str
+    generator: Literal["random_ints", "sorted_ints", "reversed_ints", "int_n", "string_n"] = "random_ints"
+    sizes: list[int] | None = Field(default=None, max_length=14)
+    extra_args: list[str] = Field(default_factory=list, max_length=4)
+    seed: int = 0

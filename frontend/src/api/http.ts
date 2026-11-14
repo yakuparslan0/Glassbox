@@ -1,4 +1,4 @@
-import type { AutofixResult, MarkSweepReport, RefactorProposal, RunCreated, RunSummary, VerificationReport } from "../types/generated";
+import type { AutofixResult, BigOReport, BranchComparison, CausalChain, MarkSweepReport, RefactorProposal, RunCreated, RunSummary, VerificationReport } from "../types/generated";
 import type { RunSettings } from "../store/uiStore";
 import { t } from "../i18n";
 
@@ -25,7 +25,14 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (await res.json()) as T;
 }
 
-export function createRun(source: string, entry: string, s: RunSettings): Promise<RunCreated> {
+export interface OverridePayload {
+  step: number;
+  frame_depth: number;
+  name: string;
+  value_literal: string;
+}
+
+export function createRun(source: string, entry: string, s: RunSettings, overrides: OverridePayload[] = []): Promise<RunCreated> {
   return request<RunCreated>("/api/runs", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -36,6 +43,7 @@ export function createRun(source: string, entry: string, s: RunSettings): Promis
       seed: s.seed,
       filter: s.filter,
       limits: { max_steps: s.maxSteps, timeout_s: s.timeoutS },
+      overrides,
     }),
   });
 }
@@ -77,3 +85,23 @@ export const verifyRefactor = (
 
 export const narrateUrl = (runId: string, lang: string, llm: boolean): string =>
   `/api/mentor/narrate?run_id=${runId}&lang=${lang}&llm=${llm}`;
+
+export const getRootCause = (id: string): Promise<CausalChain> => request<CausalChain>(`/api/runs/${id}/rootcause`);
+export const getComparison = (base: string, other: string): Promise<BranchComparison> =>
+  request<BranchComparison>(`/api/runs/${base}/compare?other=${other}`);
+export const exportUrl = (runId: string, kind: "mermaid" | "svg" | "html"): string => `/api/export/${runId}/${kind}`;
+
+export function runBigO(
+  path: string,
+  source: string,
+  func: string,
+  generator: string,
+  extraArgs: string[],
+  seed: number,
+): Promise<BigOReport> {
+  return request<BigOReport>("/api/lab/bigo", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ files: [{ path, content: source }], entry: path, func, generator, extra_args: extraArgs, seed }),
+  });
+}

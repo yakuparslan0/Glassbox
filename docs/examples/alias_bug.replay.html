@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GlassBox replay: alias_bug.py</title>
+<style>
+body{margin:0;font:14px system-ui,sans-serif;background:#11141a;color:#dde3ee;display:grid;grid-template-rows:auto 1fr auto;height:100vh}
+header{padding:8px 12px;background:#181c24;border-bottom:1px solid #2a303c} main{display:grid;grid-template-columns:1.2fr 1fr;min-height:0}
+#gb-source,#gb-side{overflow:auto;padding:8px;font:13px ui-monospace,Consolas,monospace} #gb-source .ln{white-space:pre;padding:0 4px} #gb-source .on{background:#1b3550;border-left:3px solid #4cc2ff}
+#gb-side h4{margin:8px 0 2px;font:11px system-ui;text-transform:uppercase;opacity:.6} #gb-out{white-space:pre-wrap;background:#0c0e13;padding:6px;min-height:2em}
+footer{display:flex;gap:8px;align-items:center;padding:8px 12px;background:#181c24;border-top:1px solid #2a303c} footer input{flex:1} button{background:#232938;color:#dde3ee;border:1px solid #2a303c;border-radius:6px;padding:2px 10px}
+.note{background:#3a2f17;color:#ffd98a;padding:4px 12px}
+</style></head><body>
+<header><b>GlassBox replay</b> &middot; alias_bug.py &middot; read-only, works offline</header>
+<main><div id="gb-source"><noscript>This replay needs JavaScript.</noscript></div>
+<div id="gb-side"><h4>Call stack</h4><div id="gb-stack"></div><h4>Globals</h4><div id="gb-globals"></div><h4>Output</h4><pre id="gb-out"></pre></div></main>
+<footer><button id="gb-prev">◀</button><button id="gb-play">▶</button><button id="gb-next">▶|</button>
+<input id="gb-slider" type="range" min="0" max="0" value="0"><span id="gb-label"></span></footer>
+
+<script id="gb-data" type="application/json">{"events":[{"seq":1,"type":"run_started","python":"3.14.5","tracer":"monitoring","seed":0,"limits":{"max_steps":20000,"timeout_s":10,"memory_mb":512,"max_output_kb":256},"filter":"boundaries","capabilities":{"whatif":true,"threads":false,"asyncio":false,"rlimit":false}},{"seq":2,"type":"call","step":1,"frame":1,"parent":null,"kind":"user","func":"<module>","qualname":"<module>","file":"alias_bug.py","line":1,"call_line":null,"args":{}},{"seq":3,"type":"line","step":2,"frame":1,"line":1,"delta":{"set":{},"del":[]}},{"seq":4,"type":"line","step":3,"frame":1,"line":4,"delta":{"set":{},"del":[]}},{"seq":5,"type":"line","step":4,"frame":1,"line":9,"delta":{"set":{"add_item":{"k":"func","t":"function","r":"<function add_item>"}},"del":[]}},{"seq":6,"type":"call","step":5,"frame":2,"parent":1,"kind":"user","func":"add_item","qualname":"add_item","file":"alias_bug.py","line":4,"call_line":9,"args":{"item":{"k":"prim","t":"str","r":"'apple'"},"bucket":{"ref":"o1"}},"heap":{"o1":{"k":"seq","t":"list","len":0,"items":[],"trunc":false,"size":56}}},{"seq":7,"type":"line","step":6,"frame":2,"line":5,"delta":{"set":{},"del":[]}},{"seq":8,"type":"line","step":7,"frame":2,"line":6,"delta":{"set":{"bucket":{"ref":"o1"}},"del":[]},"heap":{"o1":{"k":"seq","t":"list","len":1,"items":[{"k":"prim","t":"str","r":"'apple'"}],"trunc":false,"size":88}}},{"seq":9,"type":"return","step":8,"frame":2,"value":{"ref":"o1"}},{"seq":10,"type":"line","step":9,"frame":1,"line":10,"delta":{"set":{"first":{"ref":"o1"}},"del":[]}},{"seq":11,"type":"call","step":10,"frame":3,"parent":1,"kind":"user","func":"add_item","qualname":"add_item","file":"alias_bug.py","line":4,"call_line":10,"args":{"item":{"k":"prim","t":"str","r":"'pear'"},"bucket":{"ref":"o1"}}},{"seq":12,"type":"line","step":11,"frame":3,"line":5,"delta":{"set":{},"del":[]}},{"seq":13,"type":"line","step":12,"frame":3,"line":6,"delta":{"set":{"bucket":{"ref":"o1"}},"del":[]},"globals_delta":{"set":{"first":{"ref":"o1"}},"del":[]},"heap":{"o1":{"k":"seq","t":"list","len":2,"items":[{"k":"prim","t":"str","r":"'apple'"},{"k":"prim","t":"str","r":"'pear'"}],"trunc":false,"size":88}}},{"seq":14,"type":"return","step":13,"frame":3,"value":{"ref":"o1"}},{"seq":15,"type":"line","step":14,"frame":1,"line":11,"delta":{"set":{"second":{"ref":"o1"}},"del":[]}},{"seq":16,"type":"output","step":14,"stream":"stdout","text":"['apple', 'pear']"},{"seq":17,"type":"output","step":14,"stream":"stdout","text":" "},{"seq":18,"type":"output","step":14,"stream":"stdout","text":"['apple', 'pear']"},{"seq":19,"type":"output","step":14,"stream":"stdout","text":"\n"},{"seq":20,"type":"line","step":15,"frame":1,"line":13,"delta":{"set":{},"del":[]}},{"seq":21,"type":"line","step":16,"frame":1,"line":14,"delta":{"set":{"original":{"ref":"o2"}},"del":[]},"heap":{"o2":{"k":"seq","t":"list","len":3,"items":[{"k":"prim","t":"int","r":"1"},{"k":"prim","t":"int","r":"2"},{"k":"prim","t":"int","r":"3"}],"trunc":false,"size":88}}},{"seq":22,"type":"line","step":17,"frame":1,"line":15,"delta":{"set":{"copy":{"ref":"o2"}},"del":[]}},{"seq":23,"type":"line","step":18,"frame":1,"line":16,"delta":{"set":{"original":{"ref":"o2"},"copy":{"ref":"o2"}},"del":[]},"heap":{"o2":{"k":"seq","t":"list","len":4,"items":[{"k":"prim","t":"int","r":"1"},{"k":"prim","t":"int","r":"2"},{"k":"prim","t":"int","r":"3"},{"k":"prim","t":"int","r":"4"}],"trunc":false,"size":88}}},{"seq":24,"type":"output","step":18,"stream":"stdout","text":"[1, 2, 3, 4]"},{"seq":25,"type":"output","step":18,"stream":"stdout","text":" "},{"seq":26,"type":"output","step":18,"stream":"stdout","text":"[1, 2, 3, 4]"},{"seq":27,"type":"output","step":18,"stream":"stdout","text":"\n"},{"seq":28,"type":"return","step":19,"frame":1,"value":{"k":"prim","t":"NoneType","r":"None"}},{"seq":29,"type":"run_finished","status":"ok","exit_code":0,"steps":19,"wall_ms":6,"line_hits":{"alias_bug.py":{"1":1,"4":1,"5":2,"6":2,"9":1,"10":1,"11":1,"13":1,"14":1,"15":1,"16":1}},"func_stats":{"<module>":{"calls":1,"steps":11,"self_ns":1424300,"total_ns":1752400},"add_item":{"calls":2,"steps":8,"self_ns":328100,"total_ns":328100}},"executed_lines":{"alias_bug.py":[1,4,5,6,9,10,11,13,14,15,16]},"repeat_calls":[]}],"source":"\"\"\"Two classic aliasing bugs: a mutable default argument and a list shared between two names.\"\"\"\n\n\ndef add_item(item, bucket=[]):\n    bucket.append(item)\n    return bucket\n\n\nfirst = add_item(\"apple\")\nsecond = add_item(\"pear\")\nprint(first, second)\n\noriginal = [1, 2, 3]\ncopy = original\ncopy.append(4)\nprint(original, copy)\n","title":"alias_bug.py","info":{"thinned":false,"full_bytes":4195}}</script>
+<script>
+(function () {
+  var el = typeof document !== "undefined" ? document.getElementById("gb-data") : null;
+  var DATA = JSON.parse(el ? el.textContent : globalThis.__GB_DATA__);
+  var STEP = {call: 1, line: 1, "return": 1, exception: 1};
+  var events = DATA.events;
+  function assign(t, d) { if (!d) return; var k; for (k in (d.set || {})) t[k] = d.set[k]; (d.del || []).forEach(function (n) { delete t[n]; }); }
+  function fresh() { return {stack: [], globals: {}, heap: {}}; }
+  function apply(s, ev) {
+    if (ev.heap) for (var h in ev.heap) s.heap[h] = ev.heap[h];
+    if (ev.type === "keyframe") {
+      s.stack = ev.stack.map(function (f) { return {frame: f.frame, func: f.func, line: f.line, locals: Object.assign({}, f.locals)}; });
+      s.globals = Object.assign({}, ev.globals); s.heap = Object.assign({}, ev.heap);
+    } else if (ev.type === "call") {
+      if (ev.kind === "user") s.stack.push({frame: ev.frame, func: ev.func, line: ev.line, locals: Object.assign({}, ev.args)});
+      assign(s.globals, ev.globals_delta);
+    } else if (ev.type === "line") {
+      var f = s.stack.filter(function (x) { return x.frame === ev.frame; })[0];
+      if (f) { f.line = ev.line; assign(ev.frame === 1 ? s.globals : f.locals, ev.delta); }
+      assign(s.globals, ev.globals_delta);
+    } else if (ev.type === "return") {
+      assign(s.globals, ev.globals_delta);
+      if (ev.kind !== "boundary") s.stack = s.stack.filter(function (x) { return x.frame !== ev.frame; });
+    } else if (ev.type === "exception") { assign(s.globals, ev.globals_delta); }
+  }
+  // step k -> state after the last event BEFORE the next step event (same rule as the app)
+  var stepEvents = []; // indexes of step-creating events (or of keyframes when the trace was thinned)
+  events.forEach(function (e, i) { if (DATA.info.thinned ? e.type === "keyframe" : STEP[e.type]) stepEvents.push(i); });
+  function stateAt(k) {
+    var end = k + 1 < stepEvents.length ? stepEvents[k + 1] - 1 : events.length - 1;
+    var start = 0, i;
+    for (i = end; i >= 0; i--) if (events[i].type === "keyframe") { start = i; break; }
+    var s = fresh();
+    for (i = start; i <= end; i++) apply(s, events[i]);
+    return s;
+  }
+  function outputAt(k) {
+    var end = k + 1 < stepEvents.length ? stepEvents[k + 1] - 1 : events.length - 1, t = "", i;
+    for (i = 0; i <= end; i++) if (events[i].type === "output") t += events[i].text;
+    return t;
+  }
+  function show(v, heap, d) {
+    if (v.ref) { var e = heap[v.ref]; if (!e) return "<" + v.ref + ">"; if ((d || 0) > 1) return e.t + "…";
+      if (e.k === "seq") return "[" + e.items.map(function (x) { return show(x, heap, (d || 0) + 1); }).join(", ") + "]";
+      if (e.k === "map") return "{" + e.pairs.map(function (p) { return show(p[0], heap, (d || 0) + 1) + ": " + show(p[1], heap, (d || 0) + 1); }).join(", ") + "}";
+      if (e.k === "obj") return e.t + "(" + Object.keys(e.attrs).map(function (k) { return k + "=" + show(e.attrs[k], heap, (d || 0) + 1); }).join(", ") + ")";
+      return e.r || e.t; }
+    return v.r;
+  }
+  if (typeof module !== "undefined") module.exports = {stateAt: stateAt, outputAt: outputAt, steps: function () { return stepEvents.length; }, show: show};
+  if (typeof document === "undefined" || !document.getElementById("gb-slider")) return;
+  var slider = document.getElementById("gb-slider"), cur = 0, timer = null;
+  var srcLines = DATA.source.split("\n");
+  var srcEl = document.getElementById("gb-source");
+  srcEl.innerHTML = "";
+  srcLines.forEach(function (l, i) { var d = document.createElement("div"); d.className = "ln"; d.id = "ln" + (i + 1); d.textContent = (i + 1 + "    ").slice(0, 4) + l; srcEl.appendChild(d); });
+  slider.max = Math.max(stepEvents.length - 1, 0);
+  function render(k) {
+    cur = k; slider.value = k;
+    var s = stateAt(k), top = s.stack[s.stack.length - 1];
+    Array.prototype.forEach.call(document.querySelectorAll(".ln.on"), function (n) { n.classList.remove("on"); });
+    if (top) { var n = document.getElementById("ln" + top.line); if (n) { n.classList.add("on"); n.scrollIntoView({block: "nearest"}); } }
+    var rows = s.stack.map(function (f) { return "<b>" + f.func + "</b>:" + f.line + "<br>" + Object.keys(f.locals).map(function (n) { return "&nbsp;&nbsp;" + n + " = " + esc(show(f.locals[n], s.heap)); }).join("<br>"); });
+    document.getElementById("gb-stack").innerHTML = rows.reverse().join("<hr>");
+    document.getElementById("gb-globals").innerHTML = Object.keys(s.globals).filter(function (n) { return String(s.globals[n].r || "").indexOf("<function") !== 0; }).map(function (n) { return n + " = " + esc(show(s.globals[n], s.heap)); }).join("<br>");
+    document.getElementById("gb-out").textContent = outputAt(k);
+    document.getElementById("gb-label").textContent = "step " + (k + 1) + " / " + stepEvents.length;
+  }
+  function esc(t) { return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;"); }
+  slider.oninput = function () { render(Number(slider.value)); };
+  document.getElementById("gb-prev").onclick = function () { render(Math.max(0, cur - 1)); };
+  document.getElementById("gb-next").onclick = function () { render(Math.min(stepEvents.length - 1, cur + 1)); };
+  document.getElementById("gb-play").onclick = function () {
+    if (timer) { clearInterval(timer); timer = null; this.textContent = "▶"; return; }
+    this.textContent = "⏸"; var b = this;
+    timer = setInterval(function () { if (cur >= stepEvents.length - 1) { clearInterval(timer); timer = null; b.textContent = "▶"; return; } render(cur + 1); }, 120);
+  };
+  document.addEventListener("keydown", function (e) { if (e.key === "ArrowRight") render(Math.min(stepEvents.length - 1, cur + 1)); if (e.key === "ArrowLeft") render(Math.max(0, cur - 1)); });
+  if (stepEvents.length) render(0);
+})();
+</script>
+</body></html>

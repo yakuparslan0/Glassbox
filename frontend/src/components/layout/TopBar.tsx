@@ -1,4 +1,5 @@
 import { useT } from "../../i18n";
+import { exportUrl } from "../../api/http";
 import { EXAMPLES } from "../../lib/examples";
 import { usePlayback } from "../../store/playbackStore";
 import { useRunStore } from "../../store/runStore";
@@ -10,6 +11,8 @@ export function TopBar(): React.ReactElement {
   const source = useRunStore((s) => s.source);
   const runSource = useRunStore((s) => s.runSource);
   const finished = useRunStore((s) => s.finished);
+  const runId = useRunStore((s) => s.runId);
+  const setPresenting = useUiStore((s) => s.setPresenting);
   const { start, stop, loadExample } = useRunStore.getState();
   const { lang, setLang, settings, patchSettings, showSettings, toggleSettings } = useUiStore();
   const busy = status === "starting" || status === "running";
@@ -44,6 +47,17 @@ export function TopBar(): React.ReactElement {
       </span>
       {stale && <span className="gb-chip gb-conf-suspect">⚠ {t("top.stale")}</span>}
       <span className="flex-1" />
+      <details className="relative" aria-label={t("export.menu")}>
+        <summary className={`gb-btn inline-flex items-center ${status === "finished" ? "" : "opacity-40 pointer-events-none"}`}>⇩ {t("export.menu")}</summary>
+        {runId && status === "finished" && (
+          <div className="gb-popover" style={{ right: 0, top: 32, width: 230 }}>
+            <a className="gb-link" href={exportUrl(runId, "html")} download>{t("export.html")}</a>
+            <a className="gb-link" href={exportUrl(runId, "svg")} download>{t("export.svg")}</a>
+            <a className="gb-link" href={exportUrl(runId, "mermaid")} download>{t("export.mermaid")}</a>
+          </div>
+        )}
+      </details>
+      <button className="gb-btn" disabled={status !== "finished"} onClick={() => setPresenting(true)}>🎤 {t("present.enter")}</button>
       <button className="gb-btn" onClick={toggleSettings} aria-expanded={showSettings}>⚙ {t("top.settings")}</button>
       <button className="gb-btn" onClick={() => setLang(lang === "tr" ? "en" : "tr")}>{t("lang.switch")}</button>
       {showSettings && (

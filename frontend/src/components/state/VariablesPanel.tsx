@@ -3,6 +3,7 @@ import { useT } from "../../i18n";
 import { formatVal } from "../../lib/format";
 import { usePlayback } from "../../store/playbackStore";
 import { getRunData } from "../../store/runStore";
+import { useUiStore } from "../../store/uiStore";
 import { useViewStore } from "../../store/viewStore";
 import type { Val } from "../../types/model";
 
@@ -21,11 +22,13 @@ function historyOf(name: string, frame: number | "globals"): number[] {
   return out;
 }
 
-function Row({ name, value, frame, changed }: { name: string; value: Val; frame: number | "globals"; changed: boolean }): React.ReactElement {
+function Row({ name, value, frame, changed, depth }: { name: string; value: Val; frame: number | "globals"; changed: boolean; depth: number }): React.ReactElement {
   const t = useT();
   const heap = useViewStore((s) => s.state?.heap) ?? {};
   const goTo = usePlayback((s) => s.goTo);
   const [open, setOpen] = useState(false);
+  const openWhatIf = useUiStore((s) => s.openWhatIf);
+  const step = usePlayback((s) => s.step);
   const history = useMemo(() => (open ? historyOf(name, frame) : []), [open, name, frame]);
   return (
     <li className={changed ? "gb-changed" : ""}>
@@ -33,6 +36,12 @@ function Row({ name, value, frame, changed }: { name: string; value: Val; frame:
         <button className="gb-link font-mono text-sm" onClick={() => setOpen(!open)} title={t("vars.history")} aria-expanded={open}>{name}</button>
         <span className="font-mono text-sm opacity-90 break-all">{formatVal(value, heap)}</span>
         {changed && <span className="text-xs gb-chip" aria-label="changed">Δ</span>}
+        <button
+          className="gb-link ml-auto"
+          title={t("whatif.edit")}
+          aria-label={`${t("whatif.edit")}: ${name}`}
+          onClick={() => openWhatIf({ name, depth, step, current: "k" in value && value.k === "prim" ? value.r : "" })}
+        >✎</button>
       </div>
       {open && (
         <div className="pl-4 pb-1 flex flex-wrap gap-1 items-center text-xs">
@@ -79,7 +88,7 @@ export function VariablesPanel(): React.ReactElement {
           <h3 className="gb-h">{t("vars.locals")}</h3>
           <ul className="mb-3">
             {Object.entries(selected.locals).map(([k, v]) => (
-              <Row key={k} name={k} value={v} frame={selected.frame} changed={selected.frame === top?.frame && changedLocals.has(k)} />
+              <Row key={k} name={k} value={v} frame={selected.frame} depth={view.stack.indexOf(selected)} changed={selected.frame === top?.frame && changedLocals.has(k)} />
             ))}
           </ul>
         </>
@@ -87,7 +96,7 @@ export function VariablesPanel(): React.ReactElement {
       <h3 className="gb-h">{t("vars.globals")}</h3>
       <ul className="mb-3">
         {Object.entries(view.globals).map(([k, v]) => (
-          <Row key={k} name={k} value={v} frame="globals" changed={changedGlobals.has(k)} />
+          <Row key={k} name={k} value={v} frame="globals" depth={0} changed={changedGlobals.has(k)} />
         ))}
       </ul>
       <h3 className="gb-h">{t("vars.output")}</h3>
