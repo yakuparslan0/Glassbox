@@ -77,7 +77,9 @@ Findings: `{id,category,severity,confidence,file,start_line,end_line,title,evide
   (Docker backend only unit-tested: no Docker on the dev box)
 - Phase 3 (frontend: editor, time-travel, call graph/tree/heap, timeline, variables, mark&sweep panel, i18n): DONE
   (data path verified live + vitest; visual checks in docs/MANUAL_CHECKLIST.md still need a human in a browser)
-- Phases 4-5: not started
+- Phase 4 (LLM service, keyring, mentor narration SSE, autofix, refactor proposals, verified refactoring, UI panels): DONE
+  (Groq/Gemini live calls untested: no keys; everything else verified with fake HTTP / mock provider)
+- Phase 5: not started
 
 ## Dev environment notes
 - Python venv lives outside the OneDrive-synced tree: `%USERPROFILE%\.venvs\glassbox` (Python 3.14).

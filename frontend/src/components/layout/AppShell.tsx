@@ -4,6 +4,9 @@ import type { Key } from "../../i18n";
 import { endMessage, useRunStore } from "../../store/runStore";
 import { useUiStore, type CenterTab, type RightTab } from "../../store/uiStore";
 import { MarkSweepPanel } from "../cleanup/MarkSweepPanel";
+import { MentorPanel } from "../mentor/MentorPanel";
+import { NarrationStrip } from "../mentor/NarrationStrip";
+import { RefactorPanel } from "../refactor/RefactorPanel";
 import { CodeEditor } from "../editor/CodeEditor";
 import { CallGraphView } from "../graph/CallGraphView";
 import { CallTreeView } from "../graph/CallTreeView";
@@ -82,14 +85,15 @@ export function AppShell(): React.ReactElement {
           <Separator className="gb-sep" />
           <Panel defaultSize="28%" minSize="15%">
             <div className="h-full flex flex-col min-h-0">
-              <Tabs<RightTab> value={rightTab} onChange={setRightTab} items={[["timeline", "tab.timeline"], ["vars", "tab.vars"], ["cleanup", "tab.cleanup"]]} />
+              <Tabs<RightTab> value={rightTab} onChange={setRightTab} items={[["timeline", "tab.timeline"], ["vars", "tab.vars"], ["mentor", "tab.mentor"], ["cleanup", "tab.cleanup"], ["refactor", "tab.refactor"]]} />
               <div className="flex-1 min-h-0">
-                {rightTab === "timeline" ? <TimelinePanel /> : rightTab === "vars" ? <VariablesPanel /> : <MarkSweepPanel />}
+                {rightTab === "timeline" ? <TimelinePanel /> : rightTab === "vars" ? <VariablesPanel /> : rightTab === "mentor" ? <MentorPanel /> : rightTab === "refactor" ? <RefactorPanel /> : <MarkSweepPanel />}
               </div>
             </div>
           </Panel>
         </Group>
       </div>
+      <NarrationStrip />
       <TransportBar />
     </div>
   );

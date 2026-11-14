@@ -28,7 +28,7 @@ from .whatif import OverrideError, load_overrides
 
 
 def _make_tracer(name: str, recorder: Recorder, classifier: Classifier) -> Any:
-    if name in ("profile_time", "profile_memory"):
+    if name in ("profile_time", "profile_memory", "profile_timing"):
         from .profiler import ProfileHarness
 
         return ProfileHarness(name.removeprefix("profile_"), recorder, classifier)
@@ -103,7 +103,8 @@ def _run(job: dict[str, Any]) -> int:
                 rec.on_import(name, lib)
         return real_import(name, globals, locals, fromlist, level)
 
-    builtins.__import__ = traced_import
+    if not profile_kind:  # measurement passes must not pay for the runner's own import events
+        builtins.__import__ = traced_import
     guards.install(work_dir, bool(job.get("allow_network", False)), rec.blocked)
     random.seed(seed)
 

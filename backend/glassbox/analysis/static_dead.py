@@ -239,8 +239,8 @@ def _has_break(body: list[ast.stmt]) -> bool:
 
 
 def _block_unreachable(file: str, stmts: list[ast.stmt], reason: str) -> Finding | None:
-    if not stmts:
-        return None
+    if not stmts or all(isinstance(s, ast.Pass) for s in stmts):
+        return None  # a bare `pass` is the minimal valid body (and what autofix leaves behind)
     start, end = stmts[0].lineno, end_line(stmts[-1])
     return make_finding(
         "unreachable_code", "warn", "confirmed", file, start, end, f"Unreachable code ({reason})",

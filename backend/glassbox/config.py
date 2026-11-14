@@ -32,10 +32,24 @@ class Settings(BaseSettings):
     runs_dir: str | None = Field(None, validation_alias=AliasChoices("GLASSBOX_RUNS_DIR", "runs_dir"))
     max_source_kb: int = Field(200, ge=1)
     max_files: int = Field(20, ge=1)
+    # --- LLM providers (spec 6.4). Nothing is hardcoded: an unset base URL / model / key list = provider unavailable.
+    llm_provider_order: str = "groq,gemini"
+    groq_api_keys: str = Field("", repr=False)
+    gemini_api_keys: str = Field("", repr=False)
+    groq_model: str = ""
+    gemini_model: str = ""
+    groq_base_url: str = ""
+    gemini_base_url: str = ""
+    llm_timeout_s: float = Field(30.0, gt=0)
+    llm_max_output_tokens: int | None = None
     # strict: every event is validated against the schema (tests); sampled: every 100th (production); off.
     validate_events: Literal["strict", "sampled", "off"] = Field(
         "sampled", validation_alias=AliasChoices("GLASSBOX_VALIDATE_EVENTS", "validate_events")
     )
+
+
+def split_csv(value: str) -> list[str]:
+    return [item.strip() for item in value.split(",") if item.strip()]
 
 
 def ensure_safe_startup(settings: Settings) -> None:

@@ -18,7 +18,7 @@ from pydantic import BaseModel, TypeAdapter
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "backend"))
 
-from glassbox.schemas import analysis, api, events
+from glassbox.schemas import analysis, api, events, llm
 
 SCHEMA_PATH = ROOT / "docs" / "schema" / "glassbox.schema.json"
 TS_PATH = ROOT / "frontend" / "src" / "types" / "generated.ts"
@@ -42,7 +42,7 @@ def _models(*modules: Any) -> list[type[BaseModel]]:
 
 def build_schema() -> dict[str, Any]:
     defs: dict[str, Any] = {}
-    for model in _models(events, api, analysis):
+    for model in _models(events, api, analysis, llm):
         schema = model.model_json_schema(mode="validation", ref_template="#/$defs/{model}")
         defs.update(schema.pop("$defs", {}))
         defs[model.__name__] = schema

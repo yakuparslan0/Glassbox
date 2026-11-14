@@ -1,4 +1,5 @@
-"""Untraced profile passes (stdlib only): cProfile for real timings, tracemalloc for memory.
+"""Untraced passes (stdlib only): cProfile for per-function timings, tracemalloc for memory, and a bare
+wall-clock `timing` pass around the user code (used to compare a refactoring with the original).
 
 The two measurements run in SEPARATE processes (each distorts the other). The result travels in
 ``run_finished.profile``; no per-line events are produced in these passes.
@@ -7,6 +8,7 @@ The two measurements run in SEPARATE processes (each distorts the other). The re
 from __future__ import annotations
 
 import cProfile
+import time
 import tracemalloc
 from typing import Any
 
@@ -25,9 +27,12 @@ class ProfileHarness:
         self.classifier = classifier
         self._profile: cProfile.Profile | None = None
         self._stopped = False
+        self._t0 = 0
 
     def start(self) -> None:
-        if self.kind == "memory":
+        if self.kind == "timing":
+            self._t0 = time.perf_counter_ns()
+        elif self.kind == "memory":
             tracemalloc.start(1)
         else:
             self._profile = cProfile.Profile()
@@ -37,7 +42,9 @@ class ProfileHarness:
         if self._stopped:
             return
         self._stopped = True
-        if self.kind == "memory":
+        if self.kind == "timing":
+            self.rec.extra_finish["profile"] = {"kind": "timing", "exec_ns": time.perf_counter_ns() - self._t0}
+        elif self.kind == "memory":
             self.rec.extra_finish["profile"] = self._memory_result()
         else:
             assert self._profile is not None

@@ -1,4 +1,4 @@
-import type { MarkSweepReport, RunCreated, RunSummary } from "../types/generated";
+import type { AutofixResult, MarkSweepReport, RefactorProposal, RunCreated, RunSummary, VerificationReport } from "../types/generated";
 import type { RunSettings } from "../store/uiStore";
 import { t } from "../i18n";
 
@@ -42,3 +42,38 @@ export function createRun(source: string, entry: string, s: RunSettings): Promis
 
 export const getRun = (id: string): Promise<RunSummary> => request<RunSummary>(`/api/runs/${id}`);
 export const getMarkSweep = (id: string): Promise<MarkSweepReport> => request<MarkSweepReport>(`/api/runs/${id}/marksweep`);
+
+export const requestRefactor = (runId: string, findingId: string, lang: string): Promise<RefactorProposal> =>
+  request<RefactorProposal>(`/api/mentor/refactor?lang=${lang}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ run_id: runId, finding_id: findingId }),
+  });
+
+export const requestAutofix = (path: string, content: string, findingIds: string[]): Promise<AutofixResult> =>
+  request<AutofixResult>("/api/refactor/autofix", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ files: [{ path, content }], entry: path, finding_ids: findingIds }),
+  });
+
+export const verifyRefactor = (
+  path: string,
+  original: string,
+  proposed: string,
+  s: RunSettings,
+): Promise<VerificationReport> =>
+  request<VerificationReport>("/api/refactor/verify", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      original_files: [{ path, content: original }],
+      proposed_files: [{ path, content: proposed }],
+      entry: path,
+      stdin: s.stdin,
+      seed: s.seed,
+    }),
+  });
+
+export const narrateUrl = (runId: string, lang: string, llm: boolean): string =>
+  `/api/mentor/narrate?run_id=${runId}&lang=${lang}&llm=${llm}`;

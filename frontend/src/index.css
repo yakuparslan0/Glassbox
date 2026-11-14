@@ -85,3 +85,6 @@ body { background: var(--bg); color: var(--text); font-family: system-ui, "Segoe
 .gb-heat-3 { background: var(--heat-3); width: 6px !important; }
 .gb-heat-4 { background: var(--heat-4); width: 8px !important; }
 .gb-heat-5 { background: var(--heat-5); width: 10px !important; }
+
+.gb-card { display: block; background: #1b2130; border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px; color: var(--text); cursor: pointer; }
+.gb-card-active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }

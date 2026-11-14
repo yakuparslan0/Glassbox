@@ -92,7 +92,7 @@ class Capabilities(_Strict):
 class RunStarted(_Event):
     type: Literal["run_started"] = "run_started"
     python: str
-    tracer: Literal["monitoring", "settrace", "profile_time", "profile_memory"]
+    tracer: Literal["monitoring", "settrace", "profile_time", "profile_memory", "profile_timing"]
     seed: int
     limits: dict[str, int]
     filter: Literal["user_only", "boundaries", "boundaries_verbose"]
@@ -270,7 +270,7 @@ class RunFinished(_Event):
     detail: str | None = None
     blocked: list[dict[str, str]] | None = None
     whatif_unapplied: int | None = None
-    # Only in untraced profile passes (job.profile): {"kind": "time"|"memory", ...}.
+    # Only in untraced profile passes (job.profile): {"kind": "time"|"memory"|"timing", ...}.
     profile: dict[str, Any] | None = None
 
 

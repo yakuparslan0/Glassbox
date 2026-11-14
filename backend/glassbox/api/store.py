@@ -16,6 +16,7 @@ from typing import Any
 from pydantic import ValidationError
 
 from ..config import Settings
+from ..llm.service import LlmService
 from ..sandbox.manager import RunRequest, SandboxManager
 from ..schemas.analysis import MarkSweepReport, ProfileReport
 from ..schemas.events import validate_event
@@ -91,9 +92,10 @@ class RunStore:
 class Runtime:
     """Everything the routes share: settings, store, sandbox manager and the concurrency slots."""
 
-    def __init__(self, settings: Settings, manager: SandboxManager) -> None:
+    def __init__(self, settings: Settings, manager: SandboxManager, llm: LlmService | None = None) -> None:
         self.settings = settings
         self.manager = manager
+        self.llm = llm or LlmService([])
         self.store = RunStore(settings.run_store_size, settings.run_ttl_s)
         self.active = 0
 

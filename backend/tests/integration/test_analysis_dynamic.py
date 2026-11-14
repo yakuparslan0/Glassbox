@@ -68,7 +68,7 @@ def test_profile_passes_are_untraced_and_measure_time_and_memory() -> None:
     report = asyncio.run(dynamic_profile.run_profile(SandboxManager(), request))
     assert report.time_pass.status == "ok" and report.memory_pass.status == "ok"
     fib = next(f for f in report.functions if f.func == "fib")
-    assert fib.calls == 177 and fib.total_ms >= 0 and fib.file == "main.py"
+    assert fib.calls == 1973 and fib.total_ms >= 0 and fib.file == "main.py"
     assert report.memory_peak_kb > 4000
     assert any(f.category == "high_memory" for f in report.findings)
     assert any("untraced" in n for n in report.notes)

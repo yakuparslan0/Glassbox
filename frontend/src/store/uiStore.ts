@@ -2,7 +2,7 @@ import { create } from "zustand";
 import type { Lang } from "../i18n";
 
 export type CenterTab = "graph" | "tree" | "heap";
-export type RightTab = "timeline" | "vars" | "cleanup";
+export type RightTab = "timeline" | "vars" | "cleanup" | "mentor" | "refactor";
 
 export interface RunSettings {
   maxSteps: number;

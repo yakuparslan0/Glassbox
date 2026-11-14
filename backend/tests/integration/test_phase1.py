@@ -33,15 +33,15 @@ def test_fib_calls_balanced_unique_frames_and_repeat_calls(tracer: str) -> None:
     events = run(example_source("fib_naive.py"), tracer=tracer)
     calls = of_type(events, "call", kind="user")
     returns = [e for e in of_type(events, "return") if e.get("kind") != "boundary"]
-    assert len(calls) == len(returns) == 177 + 1  # fib(10) makes 177 calls + the module frame
+    assert len(calls) == len(returns) == 1973 + 1  # fib(15) makes 1973 calls + the module frame
     frame_ids = [c["frame"] for c in calls]
     assert len(set(frame_ids)) == len(frame_ids), "every (recursive) call needs its own frame id"
     assert {r["frame"] for r in returns} == set(frame_ids)
     done = finished(events)
     assert done["status"] == "ok"
-    assert done["func_stats"]["fib"]["calls"] == 177
+    assert done["func_stats"]["fib"]["calls"] == 1973
     assert any(r["func"] == "fib" and r["count"] > 1 for r in done["repeat_calls"])
-    assert stdout_text(events) == "fib(10) = 55\n"
+    assert stdout_text(events) == "fib(15) = 610\n"
 
 
 # ----------------------------------------------------------------------------- noise filter

@@ -8,5 +8,5 @@ def fib(n):
 
 
 if __name__ == "__main__":
-    result = fib(10)
-    print("fib(10) =", result)
+    result = fib(15)
+    print("fib(15) =", result)

@@ -152,3 +152,51 @@ by stepping forward re-enables following.
 **Not done in this phase (by design):** What-If pencil, mentor/refactor/lab tabs, presentation mode, export (Phases 4-5).
 The Phase 3 acceptance items that need to SEE the UI could not be ticked in the authoring session (no browser tool);
 see `docs/MANUAL_CHECKLIST.md`.
+
+## Phase 4
+
+**Providers.** One `OpenAICompatProvider` serves Groq and Gemini (both expose an OpenAI-compatible
+`/chat/completions`). Base URLs, models and keys come only from the environment; a provider with any of the three
+missing is inactive. The values in `.env.example` come from the providers' docs (base URLs) and model pages (model ids);
+the model ids were NOT exercised with a live key.
+
+**KeyRing.** Round-robin per provider; 429 cools the key for `Retry-After` seconds, else 2, 4, 8 ... capped at 120 s;
+401/403 disables it for the session; 5xx/timeouts try another key (up to `keys + 2` attempts) without penalising the key.
+Exhausted provider -> next provider -> `LlmUnavailable` -> Layer A. An `asyncio.Lock` guards the cursor. Only the last four
+characters of a key are ever logged.
+
+**Cache.** In-memory LRU (128) keyed by (sha256 of the messages, model). Retry prompts embed the attempt number so a
+retry is never served the same cached bad answer.
+
+**Prompting.** User code / output / digests are embedded in `<<<GB_DATA:{nonce}>>>` blocks with a per-request random nonce;
+look-alike delimiters inside the data are defused. The system prompt tells the model to ignore instructions inside data
+and to cite only numbers from a MEASURED block. Beyond prompting, `refactor.invented_numbers` rejects answers whose
+`why` / `explanation_md` / `expected_effect` contain performance-style claims ("40x", "12 ms", "30 %") whose number was
+not measured; such an answer counts as invalid and is retried (max 2 retries).
+
+**Refactor flow.** Findings that autofix can handle never reach the LLM (`source: "autofix"`). Otherwise: JSON ->
+pydantic -> edit engine (overlap/range checks, every changed `.py` must `ast.parse`) -> number check; 3 attempts total,
+then a clean 502 ("Nothing was changed"). With no usable provider: 503 with an actionable message. `RefactorProposal`
+carries `proposed_files` (server-side result of the edits) so clients need no edit engine. Nothing is ever applied
+without the user's click, and the UI requires a verification first.
+
+**Verification** (`mentor/verify.py`): `ast.parse` -> traced runs for deterministic step counts -> one discarded warm-up
+pair + 5 interleaved UNTRACED timed pairs (the runner's `timing` pass measures only the user code; the runner's own
+import events are disabled in measurement passes) -> compare stdout, status, exception type, exit code.
+`verified_faster` needs a >= 10 % lower median AND non-overlapping min/max ranges; `verified_equal` = same behaviour and
+same step count without a measurable time difference; otherwise `no_measurable_change`; behaviour differences give
+`behavior_changed`; syntax errors `broken` (not applicable in the UI).
+
+**Example changed.** `examples/fib_naive.py` now computes `fib(15)` (1,973 calls, ~9.9k steps, still under the 20k step
+limit). At `fib(10)` (177 calls, ~70 microseconds) memoization genuinely does not pay off and the honest verdict is
+`no_measurable_change`; the example was too small for the "verified faster" story, so the example, not the measurement,
+was changed.
+
+**Narration.** `mentor/digest.py` splits a finished trace into scenes (top-level calls, module-level stretches between
+them, and the unwinding after an unhandled exception) and compresses each into <= 1.8 KB (args at call time, last
+values, return, stdout excerpt, executed source lines, measured step/call/loop counts). `narrator.py` (Layer A,
+tr/en) turns the same facts into sentences with no LLM. SSE per scene: `layer_a` first, then `token`s if the LLM is
+used, `fallback` if it becomes unavailable, `scene_done`. The UI loads Layer A automatically after each run and calls
+the LLM only on an explicit click (quota / privacy: source code leaves the machine only then).
+
+**Timeline sentences** stay client-side (`lib/format.ts`); the backend narrator works on scenes, not single steps.

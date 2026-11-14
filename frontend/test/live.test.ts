@@ -7,6 +7,7 @@ import { join } from "node:path";
 import { describe, expect, it } from "vitest";
 import { buildHeapGraph } from "../src/lib/heapGraph";
 import { RunData } from "../src/lib/runData";
+import { SseParser } from "../src/lib/sseParser";
 import { StateBuilder } from "../src/lib/stateBuilder";
 import type { RunEvent } from "../src/types/generated";
 
@@ -53,8 +54,8 @@ describe.skipIf(!BASE)("live stack", () => {
       lastCalls = calls;
     }
     const fib = [...data.graph.nodes.values()].find((n) => n.label === "fib");
-    expect(fib?.calls).toBe(177);
-    expect(data.graph.edges.get("fn:main.py:fib->fn:main.py:fib")?.count).toBe(176);
+    expect(fib?.calls).toBe(1973);
+    expect(data.graph.edges.get("fn:main.py:fib->fn:main.py:fib")?.count).toBe(1972);
   });
 
   it("random jumps (back/forward/step over/out) land on the right line with the right stack", async () => {
@@ -128,5 +129,38 @@ describe.skipIf(!BASE)("live stack", () => {
     // the earlier module-level pair first/second also alias the mutable-default list
     const firstSecond = (["first", "second"] as const).map((n) => (last.globals[n] as { ref: string }).ref);
     expect(firstSecond[0]).toBe(firstSecond[1]);
+  });
+
+  it("mentor: keyless Layer A narration streams through the proxy and names the offending value", async () => {
+    const res = await fetch(`${BASE}/api/runs`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ files: [{ path: "main.py", content: example("crash_chain.py") }], entry: "main.py" }),
+    });
+    const { run_id } = (await res.json()) as { run_id: string };
+    for (let i = 0; i < 100; i++) {
+      const st = (await (await fetch(`${BASE}/api/runs/${run_id}`)).json()) as { state: string };
+      if (st.state !== "running") break;
+      await new Promise((r) => setTimeout(r, 50));
+    }
+    const sse = await fetch(`${BASE}/api/mentor/narrate?run_id=${run_id}&lang=tr&llm=false`);
+    expect(sse.headers.get("content-type")).toContain("text/event-stream");
+    const parser = new SseParser();
+    const messages = parser.push(await sse.text());
+    expect(messages[0].event).toBe("meta");
+    expect(messages.at(-1)?.event).toBe("done");
+    const texts = messages.filter((m) => m.event === "layer_a").map((m) => (m.data as { text: string }).text);
+    expect(texts.some((t) => t.includes("ZeroDivisionError") && t.includes("`count` = 0"))).toBe(true);
+  });
+
+  it("autofix through the proxy removes the dead code and keeps the file parseable", async () => {
+    const res = await fetch(`${BASE}/api/refactor/autofix`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ files: [{ path: "main.py", content: "import os\nprint(1)\n" }], entry: "main.py", finding_ids: ["unused_import:main.py:1"] }),
+    });
+    const out = (await res.json()) as { files: { content: string }[]; applied: string[] };
+    expect(out.applied).toEqual(["unused_import:main.py:1"]);
+    expect(out.files[0].content).toBe("print(1)\n");
   });
 });

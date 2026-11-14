@@ -6,17 +6,21 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from ..config import Settings, ensure_safe_startup
+from ..llm.service import LlmService
 from ..sandbox.docker_backend import DockerBackend
 from ..sandbox.manager import SandboxManager
 from ..sandbox.subprocess_backend import SubprocessBackend
 from ..schemas.api import Health, LlmHealth
 from .routes_analysis import router as analysis_router
+from .routes_mentor import router as mentor_router
 from .routes_runs import router as runs_router
 from .store import Runtime
 from .ws import router as ws_router
 
 
-def create_app(settings: Settings | None = None, manager: SandboxManager | None = None) -> FastAPI:
+def create_app(
+    settings: Settings | None = None, manager: SandboxManager | None = None, llm: LlmService | None = None
+) -> FastAPI:
     """Build the app. Raises ``StartupError`` when the configuration is unsafe (see ``ensure_safe_startup``)."""
     settings = settings or Settings()
     ensure_safe_startup(settings)
@@ -25,7 +29,7 @@ def create_app(settings: Settings | None = None, manager: SandboxManager | None 
         manager = SandboxManager(backend=backend)
 
     app = FastAPI(title="GlassBox", version="0.2.0")
-    app.state.runtime = Runtime(settings, manager)
+    app.state.runtime = Runtime(settings, manager, llm or LlmService.from_settings(settings))
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
@@ -34,11 +38,12 @@ def create_app(settings: Settings | None = None, manager: SandboxManager | None 
     )
     app.include_router(runs_router)
     app.include_router(analysis_router)
+    app.include_router(mentor_router)
     app.include_router(ws_router)
 
     @app.get("/api/health", response_model=Health)
     async def health() -> Health:
-        # LLM providers arrive in Phase 4; until then the list is honestly empty.
-        return Health(status="ok", llm=LlmHealth(providers=[]), sandbox_mode=settings.sandbox_mode)
+        rt: Runtime = app.state.runtime
+        return Health(status="ok", llm=LlmHealth(providers=rt.llm.health()), sandbox_mode=settings.sandbox_mode)
 
     return app

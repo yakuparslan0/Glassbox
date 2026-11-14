@@ -1,5 +1,72 @@
 {
   "$defs": {
+    "AutofixRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "default": "main.py",
+          "title": "Entry",
+          "type": "string"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/$defs/SourceFile"
+          },
+          "title": "Files",
+          "type": "array"
+        },
+        "finding_ids": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 200,
+          "title": "Finding Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "files",
+        "finding_ids"
+      ],
+      "title": "AutofixRequest",
+      "type": "object"
+    },
+    "AutofixResult": {
+      "additionalProperties": false,
+      "properties": {
+        "applied": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Applied",
+          "type": "array"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/$defs/SourceFile"
+          },
+          "title": "Files",
+          "type": "array"
+        },
+        "skipped": {
+          "items": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object"
+          },
+          "title": "Skipped",
+          "type": "array"
+        }
+      },
+      "required": [
+        "files",
+        "applied",
+        "skipped"
+      ],
+      "title": "AutofixResult",
+      "type": "object"
+    },
     "CallBoundary": {
       "additionalProperties": false,
       "properties": {
@@ -422,6 +489,39 @@
         }
       },
       "title": "Delta",
+      "type": "object"
+    },
+    "Edit": {
+      "additionalProperties": false,
+      "description": "Replace lines start_line..end_line (1-based, inclusive) of ``file`` by ``new_code`` (empty = delete).",
+      "properties": {
+        "end_line": {
+          "minimum": 1,
+          "title": "End Line",
+          "type": "integer"
+        },
+        "file": {
+          "title": "File",
+          "type": "string"
+        },
+        "new_code": {
+          "maxLength": 20000,
+          "title": "New Code",
+          "type": "string"
+        },
+        "start_line": {
+          "minimum": 1,
+          "title": "Start Line",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "file",
+        "start_line",
+        "end_line",
+        "new_code"
+      ],
+      "title": "Edit",
       "type": "object"
     },
     "ExceptionEvent": {
@@ -1150,6 +1250,47 @@
       "title": "LlmHealth",
       "type": "object"
     },
+    "LlmRefactorOutput": {
+      "additionalProperties": false,
+      "description": "The JSON contract the LLM must follow (NOT a unified diff).",
+      "properties": {
+        "edits": {
+          "items": {
+            "$ref": "#/$defs/Edit"
+          },
+          "maxItems": 10,
+          "minItems": 1,
+          "title": "Edits",
+          "type": "array"
+        },
+        "expected_effect": {
+          "maxLength": 1000,
+          "minLength": 1,
+          "title": "Expected Effect",
+          "type": "string"
+        },
+        "explanation_md": {
+          "maxLength": 6000,
+          "minLength": 1,
+          "title": "Explanation Md",
+          "type": "string"
+        },
+        "why": {
+          "maxLength": 2000,
+          "minLength": 1,
+          "title": "Why",
+          "type": "string"
+        }
+      },
+      "required": [
+        "edits",
+        "why",
+        "explanation_md",
+        "expected_effect"
+      ],
+      "title": "LlmRefactorOutput",
+      "type": "object"
+    },
     "MapEntry": {
       "additionalProperties": false,
       "properties": {
@@ -1667,6 +1808,84 @@
         "ref"
       ],
       "title": "Ref",
+      "type": "object"
+    },
+    "RefactorProposal": {
+      "additionalProperties": false,
+      "properties": {
+        "edits": {
+          "items": {
+            "$ref": "#/$defs/Edit"
+          },
+          "title": "Edits",
+          "type": "array"
+        },
+        "expected_effect": {
+          "title": "Expected Effect",
+          "type": "string"
+        },
+        "explanation_md": {
+          "title": "Explanation Md",
+          "type": "string"
+        },
+        "finding_id": {
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "proposed_files": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "title": "Proposed Files",
+          "type": "object"
+        },
+        "source": {
+          "enum": [
+            "autofix",
+            "llm"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "verified": {
+          "default": false,
+          "title": "Verified",
+          "type": "boolean"
+        },
+        "why": {
+          "title": "Why",
+          "type": "string"
+        }
+      },
+      "required": [
+        "finding_id",
+        "edits",
+        "explanation_md",
+        "why",
+        "expected_effect",
+        "source",
+        "proposed_files"
+      ],
+      "title": "RefactorProposal",
+      "type": "object"
+    },
+    "RefactorRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "finding_id": {
+          "title": "Finding Id",
+          "type": "string"
+        },
+        "run_id": {
+          "title": "Run Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "run_id",
+        "finding_id"
+      ],
+      "title": "RefactorRequest",
       "type": "object"
     },
     "RepeatCall": {
@@ -2314,7 +2533,8 @@
             "monitoring",
             "settrace",
             "profile_time",
-            "profile_memory"
+            "profile_memory",
+            "profile_timing"
           ],
           "title": "Tracer",
           "type": "string"
@@ -2756,6 +2976,167 @@
         "files"
       ],
       "title": "StaticRequest",
+      "type": "object"
+    },
+    "TimeStats": {
+      "additionalProperties": false,
+      "properties": {
+        "max": {
+          "title": "Max",
+          "type": "number"
+        },
+        "median": {
+          "title": "Median",
+          "type": "number"
+        },
+        "min": {
+          "title": "Min",
+          "type": "number"
+        }
+      },
+      "required": [
+        "median",
+        "min",
+        "max"
+      ],
+      "title": "TimeStats",
+      "type": "object"
+    },
+    "VerificationReport": {
+      "additionalProperties": false,
+      "properties": {
+        "behavior_equal": {
+          "title": "Behavior Equal",
+          "type": "boolean"
+        },
+        "diffs": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Diffs",
+          "type": "array"
+        },
+        "parses": {
+          "title": "Parses",
+          "type": "boolean"
+        },
+        "speedup": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Speedup"
+        },
+        "steps_after": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Steps After"
+        },
+        "steps_before": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Steps Before"
+        },
+        "time_after_ms": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeStats"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "time_before_ms": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/TimeStats"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "verdict": {
+          "enum": [
+            "verified_faster",
+            "verified_equal",
+            "no_measurable_change",
+            "behavior_changed",
+            "broken"
+          ],
+          "title": "Verdict",
+          "type": "string"
+        }
+      },
+      "required": [
+        "parses",
+        "behavior_equal",
+        "diffs",
+        "steps_before",
+        "steps_after",
+        "time_before_ms",
+        "time_after_ms",
+        "speedup",
+        "verdict"
+      ],
+      "title": "VerificationReport",
+      "type": "object"
+    },
+    "VerifyRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "entry": {
+          "default": "main.py",
+          "title": "Entry",
+          "type": "string"
+        },
+        "original_files": {
+          "items": {
+            "$ref": "#/$defs/SourceFile"
+          },
+          "title": "Original Files",
+          "type": "array"
+        },
+        "proposed_files": {
+          "items": {
+            "$ref": "#/$defs/SourceFile"
+          },
+          "title": "Proposed Files",
+          "type": "array"
+        },
+        "seed": {
+          "default": 0,
+          "title": "Seed",
+          "type": "integer"
+        },
+        "stdin": {
+          "default": "",
+          "title": "Stdin",
+          "type": "string"
+        }
+      },
+      "required": [
+        "original_files",
+        "proposed_files"
+      ],
+      "title": "VerifyRequest",
       "type": "object"
     },
     "WhatIfApplied": {

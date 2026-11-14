@@ -217,13 +217,8 @@ def _cold_blocks(
 
 
 # ------------------------------------------------------------------------------------------ report
-def build(files: dict[str, str], entry: str, events: list[dict[str, Any]]) -> MarkSweepReport:
-    trees = parse_files(files)
-    finished = next((e for e in reversed(events) if e.get("type") == "run_finished"), {})
-    executed = {f: set(map(int, lines)) for f, lines in (finished.get("executed_lines") or {}).items()}
-    ran = bool(executed)
-
-    findings: list[Finding] = []
+def static_with_transitive(trees: dict[str, ast.Module]) -> list[Finding]:
+    """Direct static findings plus functions that are only reachable from dead code (no run needed)."""
     static = static_dead.analyze(trees)
     reached, defs = reachable_definitions(trees)
 
@@ -243,6 +238,17 @@ def build(files: dict[str, str], entry: str, events: list[dict[str, Any]]) -> Ma
                 autofixable=not getattr(node, "decorator_list", None),
             )
         )  # fmt: skip
+    return static
+
+
+def build(files: dict[str, str], entry: str, events: list[dict[str, Any]]) -> MarkSweepReport:
+    trees = parse_files(files)
+    finished = next((e for e in reversed(events) if e.get("type") == "run_finished"), {})
+    executed = {f: set(map(int, lines)) for f, lines in (finished.get("executed_lines") or {}).items()}
+    ran = bool(executed)
+
+    findings: list[Finding] = []
+    static = static_with_transitive(trees)
 
     # classify dead findings with MARK-2
     skip_ranges: dict[str, list[tuple[int, int]]] = defaultdict(list)
