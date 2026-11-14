@@ -75,8 +75,12 @@ Findings: `{id,category,severity,confidence,file,start_line,end_line,title,evide
 - Phase 1 (tracing core, sandbox, CLI): DONE (see docs/DECISIONS.md; POSIX rlimit path untested on the Windows dev box)
 - Phase 2 (API, WS streaming, analysis engines, docker backend, gen_types, `glassbox report/serve`): DONE
   (Docker backend only unit-tested: no Docker on the dev box)
-- Phases 3-5: not started
+- Phase 3 (frontend: editor, time-travel, call graph/tree/heap, timeline, variables, mark&sweep panel, i18n): DONE
+  (data path verified live + vitest; visual checks in docs/MANUAL_CHECKLIST.md still need a human in a browser)
+- Phases 4-5: not started
 
 ## Dev environment notes
 - Python venv lives outside the OneDrive-synced tree: `%USERPROFILE%\.venvs\glassbox` (Python 3.14).
 - Run tests: `<venv>\Scripts\python -m pytest backend/tests`; lint: `<venv>\Scripts\python -m ruff check backend scripts`; schema: `make schema` (`--check` in tests).
+- Frontend: `cd frontend && npm run build && npx vitest run`; live check: start `make serve` + `npm run dev`, then
+  `GLASSBOX_LIVE=http://127.0.0.1:5173 npx vitest run test/live.test.ts`.

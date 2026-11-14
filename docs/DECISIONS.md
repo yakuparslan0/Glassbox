@@ -119,3 +119,36 @@ installed on the development machine, only the generated command line is unit-te
 
 **Deferred.** Export routes (Phase 5), mentor/refactor routes (Phase 4), rootcause and bigo routes (Phase 5).
 Docker `API`/frontend images arrive with the Dockerfiles of Phase 5; `docker-compose.yml` only builds the runner image.
+
+## Phase 3
+
+**Stack versions.** Installed the latest stable at install time and committed `frontend/package-lock.json`
+(React 19, Vite 8, TypeScript 7, Vitest 5, Tailwind 4, react-resizable-panels 4, xyflow 12). Tailwind 4 is CSS-first, so
+there is no `tailwind.config.ts`; theme colours are CSS variables in `src/index.css`.
+
+**Monaco is bundled, not loaded from a CDN** (`lib/monaco.ts`: editor core + Python grammar + editor worker only), so the
+app works offline. This makes the main chunk ~3.2 MB (870 KB gzip); `chunkSizeWarningLimit` is raised to 4000 KB in
+`vite.config.ts` on purpose, so the build prints no warning for this known size.
+
+**Known audit finding.** `npm audit` reports a DOMPurify advisory pulled in by `monaco-editor` (0.56); `npm audit fix`
+does not resolve it without a Monaco upgrade/downgrade. Monaco only sanitizes content produced by this app (hover
+texts), but track it.
+
+**State flow.** Events live in plain structures outside React state (`lib/runData.ts`); the zustand stores carry only
+counters. WebSocket batches are applied once per animation frame. The Web Worker (`workers/stateWorker.ts`) owns a
+`StateBuilder` (nearest keyframe + deltas, sequential cache) and answers latest-wins requests; the main thread keeps a
+64-entry LRU of results. A step's state = state after the last event before the next step's event (`endSeqOfStep`).
+`lib/stateBuilder.ts` is checked against the backend's `snapshot` ground truth on shared fixtures
+(`backend/tests/fixtures/traces/`, regenerate with `python scripts/gen_fixtures.py`).
+
+**Live follow.** The playhead follows the newest step until the user scrubs (any manual move); reaching the end again
+by stepping forward re-enables following.
+
+**Timeline sentences** are produced client-side by a small deterministic formatter (`lib/format.ts`); the backend
+`mentor/narrator.py` arrives in Phase 4 and will replace it.
+
+**Single-file editor.** The UI submits one file (the entry). Multi-file projects work through the API and CLI.
+
+**Not done in this phase (by design):** What-If pencil, mentor/refactor/lab tabs, presentation mode, export (Phases 4-5).
+The Phase 3 acceptance items that need to SEE the UI could not be ticked in the authoring session (no browser tool);
+see `docs/MANUAL_CHECKLIST.md`.
