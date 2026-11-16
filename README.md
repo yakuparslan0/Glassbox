@@ -5,6 +5,8 @@ lets you scrub back and forth through it: call graph, variables, heap and aliasi
 a rule-based (and optionally LLM-powered) mentor, measured refactorings, "what if I change this value?" branches,
 root-cause tracing of crashes, and an empirical Big-O lab. The UI is Turkish by default (English included).
 
+<p align="center"><img src="docs/screenshot.png" alt="GlassBox UI running fib_naive: Monaco editor on the left, call graph (fib called 1973 times) in the middle, Big-O lab on the right, time-travel transport bar at the bottom" width="900"></p>
+
 > ## Security warning
 > The default `subprocess` sandbox is **not a security boundary**. It protects against runaway loops, memory and
 > accidents, **not against malicious code**. The server therefore binds `127.0.0.1` only, and it **refuses to start**

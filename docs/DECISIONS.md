@@ -237,8 +237,9 @@ Keys: Space, left/right, Shift+left/right (scene), `[` `]` (speed), `F` (fullscr
 stops at the start of each scene for `clamp(45 ms x text length, 1.5 s, 8 s) / speed` so the narration can be read.
 
 **Productization.** `make dev` runs `scripts/dev.py` (API + Vite, installs the frontend dependencies on first use).
-`make` is not installed on the Windows development machine, so the targets were verified by running their commands
-directly. The CI workflow and the Docker images have NOT been executed. The compose file mounts the Docker socket and a
+`make` is not installed on the Windows development machine, so the targets were verified there by running their
+commands directly. Update: the CI workflow has since run on GitHub Actions (ubuntu-latest) and was green on `main` and
+`v1.0.0`. The Docker images have still NOT been executed. The compose file mounts the Docker socket and a
 host directory at an identical path for the runner bind mounts (Linux only, untested).
 
 **Example artefacts** in `docs/examples/` are real output of `glassbox export` (not hand-written).
