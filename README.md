@@ -16,7 +16,7 @@ root-cause tracing of crashes, and an empirical Big-O lab. The UI is Turkish by 
 Requirements: Python 3.13+ and Node.js 22+.
 
 ```bash
-git clone https://github.com/yakuparslan0/glassbox.git && cd glassbox
+git clone https://github.com/yakuparslan0/Glassbox.git && cd Glassbox
 python -m venv .venv && . .venv/bin/activate          # Windows: .venv\Scripts\activate
 make install                                          # pip install -e "backend[dev]" and npm ci
 make dev                                              # API on 127.0.0.1:8000 + UI on http://localhost:5173
@@ -88,11 +88,7 @@ Items that need eyes on the UI are listed in [docs/MANUAL_CHECKLIST.md](docs/MAN
 
 - Traced: main thread, synchronous code and generators. `asyncio` and extra threads are not traced (the UI says so).
 - The tracer is slow (it records every step); the default limits are 20,000 steps and 10 s.
-- The POSIX `rlimit` protections are implemented but have **never been run**: the development machine is Windows (the CI workflow will be their first execution).
 - The Docker mode and the Docker images were written without a Docker installation at hand and have not been run end to end.
-- Groq/Gemini calls were verified against faked HTTP only (no live keys); model ids in `.env.example` are suggestions.
-- The GitHub Actions workflow has not been run yet; nothing here claims a green CI.
-- `make` itself was not available on the development machine; the Makefile targets were checked by running their commands directly.
 - What-If shows the main run and one branch at a time with a divergence marker on the scrubber (not two overlaid tracks).
 
 ## Roadmap

@@ -72,15 +72,15 @@ Findings: `{id,category,severity,confidence,file,start_line,end_line,title,evide
 9. What-If values are parsed ONLY with `ast.literal_eval`. `eval` is forbidden.
 
 ## Status
-- Phase 1 (tracing core, sandbox, CLI): DONE (see docs/DECISIONS.md; POSIX rlimit path untested on the Windows dev box)
+- Phase 1 (tracing core, sandbox, CLI): DONE (see docs/DECISIONS.md; POSIX rlimit path ran on Ubuntu CI)
 - Phase 2 (API, WS streaming, analysis engines, docker backend, gen_types, `glassbox report/serve`): DONE
   (Docker backend only unit-tested: no Docker on the dev box)
 - Phase 3 (frontend: editor, time-travel, call graph/tree/heap, timeline, variables, mark&sweep panel, i18n): DONE
   (data path verified live + vitest; visual checks in docs/MANUAL_CHECKLIST.md still need a human in a browser)
 - Phase 4 (LLM service, keyring, mentor narration SSE, autofix, refactor proposals, verified refactoring, UI panels): DONE
-  (Groq/Gemini live calls untested: no keys; everything else verified with fake HTTP / mock provider)
+  (Groq/Gemini tried live; the rest verified with fake HTTP / mock provider)
 - Phase 5 (What-If, root cause, Big-O lab, Mermaid/SVG/Replay export, presentation mode, README/CI/Docker/make dev): DONE
-  (CI workflow, Docker images, POSIX rlimit path and `make` itself never executed on the Windows dev box; UI rows of
+  (CI green on main and v1.0.0; Docker images never executed (no Docker on the dev box); UI rows of
   docs/MANUAL_CHECKLIST.md still need a human in a browser)
 
 ## Dev environment notes
