@@ -1,5 +1,7 @@
 # GlassBox
 
+> *See what your Python code actually does — a visual time-travel debugger, call graph explorer, and empirical Big-O laboratory.*
+
 **See your Python code run.** GlassBox executes a Python program in an isolated process, records every step, and
 lets you scrub back and forth through it: call graph, variables, heap and aliasing, dead and cold code, bottlenecks,
 a rule-based (and optionally LLM-powered) mentor, measured refactorings, "what if I change this value?" branches,
