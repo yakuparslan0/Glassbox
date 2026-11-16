@@ -16,7 +16,7 @@ root-cause tracing of crashes, and an empirical Big-O lab. The UI is Turkish by 
 Requirements: Python 3.13+ and Node.js 22+.
 
 ```bash
-git clone <this repository> && cd glassbox
+git clone https://github.com/yakuparslan0/glassbox.git && cd glassbox
 python -m venv .venv && . .venv/bin/activate          # Windows: .venv\Scripts\activate
 make install                                          # pip install -e "backend[dev]" and npm ci
 make dev                                              # API on 127.0.0.1:8000 + UI on http://localhost:5173
